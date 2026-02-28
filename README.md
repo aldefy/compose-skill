@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/JetBrains/compose-multiplatform/master/artwork/compose-logo.png" width="80" alt="Jetpack Compose logo"/>
+  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/jetpackcompose/jetpackcompose-original.svg" width="80" alt="Jetpack Compose logo"/>
 </p>
 
 <h1 align="center">Jetpack Compose Agent Skill</h1>
