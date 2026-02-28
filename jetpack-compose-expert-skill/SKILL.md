@@ -6,11 +6,12 @@ description: >
   and structure, Modifier chains, lazy lists, navigation, animation, side effects, theming,
   accessibility, and performance optimization. Backed by actual androidx source code analysis.
   Use this skill whenever the user mentions Compose, @Composable, remember, LaunchedEffect,
-  Scaffold, NavHost, MaterialTheme, LazyColumn, Modifier, recomposition, or any Jetpack Compose
-  API. Also trigger when the user says "Android UI", "Kotlin UI", "compose layout", "compose
-  navigation", "compose animation", "material3", or asks about modern Android development
-  patterns. Even casual mentions like "my compose screen is slow" or "how do I pass data
-  between screens" should trigger this skill.
+  Scaffold, NavHost, MaterialTheme, LazyColumn, Modifier, recomposition, Style, styleable,
+  MutableStyleState, or any Jetpack Compose API. Also trigger when the user says "Android UI",
+  "Kotlin UI", "compose layout", "compose navigation", "compose animation", "material3",
+  "compose styles", "styles api", or asks about modern Android development patterns. Even
+  casual mentions like "my compose screen is slow" or "how do I pass data between screens"
+  should trigger this skill.
 ---
 
 # Jetpack Compose Expert Skill
@@ -44,6 +45,7 @@ Read the relevant reference file(s) from `references/` before answering:
 | Recomposition skipping, stability, baseline profiles, benchmarking | `references/performance.md` |
 | Semantics, content descriptions, traversal order, testing | `references/accessibility.md` |
 | Removed/replaced APIs, migration paths from older Compose versions | `references/deprecated-patterns.md` |
+| **Styles API** (experimental): `Style {}`, `MutableStyleState`, `Modifier.styleable()` | `references/styles-experimental.md` |
 
 ### 3. Apply and verify
 - Write code that follows the patterns in the reference

@@ -24,7 +24,7 @@ AI coding tools generate Compose code that compiles but gets the details wrong. 
 
 This skill fixes that by giving your AI assistant two things:
 
-1. **12 reference guides** covering every major Compose topic with do/don't examples and common pitfalls
+1. **13 reference guides** covering every major Compose topic with do/don't examples and common pitfalls
 2. **5 source code files** pulled directly from [`androidx/androidx`](https://github.com/androidx/androidx/tree/androidx-main/compose) so the agent can check how things actually work
 
 Think of it as the Compose equivalent of [AvdLee/SwiftUI-Agent-Skill](https://github.com/AvdLee/SwiftUI-Agent-Skill) — same idea, Android/Kotlin world.
@@ -56,6 +56,7 @@ Think of it as the Compose equivalent of [AvdLee/SwiftUI-Agent-Skill](https://gi
 | Accessibility | Semantics, content descriptions, traversal order, touch targets, TalkBack |
 | CompositionLocals | `LocalContext`, `LocalDensity`, custom locals, when to use vs. parameter passing |
 | Deprecated patterns | Removed APIs, migration paths from older Compose versions |
+| **Styles API (experimental)** | `Style {}`, `MutableStyleState`, `Modifier.styleable()`, composition, theme integration, alpha06 gotchas |
 | Source code | Actual `.kt` from `androidx/androidx` for runtime, UI, foundation, material3, navigation |
 
 ## How it works
@@ -80,7 +81,7 @@ You ask about Compose
               +-- ... (5 source files)
 ```
 
-**Layer 1: guidance docs** (12 files, ~120KB) — practical references with patterns, pitfalls, and do/don't examples. This is what the agent reads first.
+**Layer 1: guidance docs** (13 files, ~130KB) — practical references with patterns, pitfalls, and do/don't examples. This is what the agent reads first.
 
 **Layer 2: source code receipts** (5 files, ~2.3MB) — the actual Kotlin source from `androidx/androidx` (branch: `androidx-main`). When the agent needs to verify an implementation detail rather than guess, it reads these.
 
@@ -102,6 +103,7 @@ jetpack-compose-expert-skill/
     ├── performance.md                    # Recomposition, stability, benchmarking
     ├── accessibility.md                  # Semantics, content descriptions, testing
     ├── deprecated-patterns.md            # Removed APIs, migration paths
+    ├── styles-experimental.md           # Styles API (@ExperimentalFoundationStyleApi)
     └── source-code/                      # Actual .kt source from androidx/androidx
         ├── runtime-source.md             # Composer, Recomposer, State, Effects
         ├── ui-source.md                  # AndroidCompositionLocals, Modifier, Layout
