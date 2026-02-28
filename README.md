@@ -116,6 +116,30 @@ The skill is just markdown files. Every tool below reads the same content. Pick 
 
 ---
 
+### Claude Code
+
+```bash
+# Available in all your projects
+claude skill add --personal /path/to/compose-skill/jetpack-compose-expert-skill
+
+# Or just one project
+claude skill add /path/to/compose-skill/jetpack-compose-expert-skill
+```
+
+Or add to `.claude/settings.json`:
+
+```json
+{
+  "skills": [
+    "/path/to/compose-skill/jetpack-compose-expert-skill"
+  ]
+}
+```
+
+Triggers automatically when you mention Compose, `@Composable`, `remember`, `LazyColumn`, `NavHost`, etc.
+
+---
+
 ### Codex CLI (OpenAI)
 
 Point to the skill file directly:
