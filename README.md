@@ -120,37 +120,37 @@ The skill is just markdown files. Every tool below reads the same content. Pick 
 
 ### Claude Code
 
+Skills are file-based — Claude Code discovers them automatically from `~/.claude/skills/` (personal) or `.claude/skills/` (project-specific).
+
+**Personal skill (available in all your projects):**
+
 ```bash
-# Available in all your projects
-claude skill add --personal /path/to/compose-skill/jetpack-compose-expert-skill
+# Clone the repo
+git clone https://github.com/aldefy/compose-skill.git /tmp/compose-skill
 
-# Or just one project
-claude skill add /path/to/compose-skill/jetpack-compose-expert-skill
+# Copy into your personal skills directory
+mkdir -p ~/.claude/skills
+cp -r /tmp/compose-skill/jetpack-compose-expert-skill ~/.claude/skills/
 ```
 
-Or add to `.claude/settings.json`:
+**Project-specific skill (just one project):**
 
-```json
-{
-  "skills": [
-    "/path/to/compose-skill/jetpack-compose-expert-skill"
-  ]
-}
+```bash
+# Clone the repo
+git clone https://github.com/aldefy/compose-skill.git /tmp/compose-skill
+
+# Copy into your project's .claude/skills directory
+mkdir -p .claude/skills
+cp -r /tmp/compose-skill/jetpack-compose-expert-skill .claude/skills/
 ```
 
-Triggers automatically when you mention Compose, `@Composable`, `remember`, `LazyColumn`, `NavHost`, etc.
+No CLI command or config file needed. Claude Code picks up `SKILL.md` from these directories automatically and triggers when you mention Compose, `@Composable`, `remember`, `LazyColumn`, `NavHost`, etc.
 
 ---
 
 ### Codex CLI (OpenAI)
 
-Point to the skill file directly:
-
-```bash
-codex --instructions jetpack-compose-expert-skill/SKILL.md
-```
-
-Or reference it from `AGENTS.md` in your project root:
+Add an `AGENTS.md` file to your project root:
 
 ```markdown
 # AGENTS.md
@@ -161,11 +161,13 @@ For all Compose/Android UI tasks, follow the instructions in
 files in `jetpack-compose-expert-skill/references/` before answering.
 ```
 
-Add to your project as a submodule:
+Add the skill to your project as a submodule:
 
 ```bash
-git submodule add git@github.com:aldefy/compose-skill.git .compose-skill
+git submodule add https://github.com/aldefy/compose-skill.git .compose-skill
 ```
+
+Codex discovers `AGENTS.md` files automatically from the git root down to the current directory.
 
 ---
 
@@ -233,13 +235,15 @@ and source-code-backed guidance.
 
 ### Windsurf
 
-Add to `.windsurfrules` in your project root:
+Create `.windsurf/rules/compose-skill.md` in your project root:
 
 ```markdown
 For all Jetpack Compose tasks, follow the workflow in
 `jetpack-compose-expert-skill/SKILL.md` and consult the reference
 files in `jetpack-compose-expert-skill/references/` before answering.
 ```
+
+> **Note:** The legacy `.windsurfrules` file also works but `.windsurf/rules/` is the current approach.
 
 ---
 
