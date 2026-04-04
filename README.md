@@ -216,6 +216,34 @@ git submodule add git@github.com:aldefy/compose-skill.git .compose-skill
 
 ---
 
+### Google Antigravity
+
+Antigravity automatically discovers skills from workspace or global skill folders. The `jetpack-compose-expert-skill` directory acts as a complete, ready-to-use Antigravity skill since it contains the needed `SKILL.md` file with a YAML frontmatter description.
+
+**Workspace skill (project-specific):**
+
+```bash
+# Clone the repo
+git clone https://github.com/aldefy/compose-skill.git /tmp/compose-skill
+
+# Copy into your project's .agents/skills directory
+mkdir -p .agents/skills
+cp -r /tmp/compose-skill/jetpack-compose-expert-skill .agents/skills/compose-expert
+```
+
+**Global skill (available in all your projects):**
+
+```bash
+# Clone the repo
+git clone https://github.com/aldefy/compose-skill.git /tmp/compose-skill
+
+# Copy into your global Antigravity skills directory
+mkdir -p ~/.gemini/antigravity/skills
+cp -r /tmp/compose-skill/jetpack-compose-expert-skill ~/.gemini/antigravity/skills/compose-expert
+```
+
+---
+
 ### Cursor
 
 Create `.cursor/rules/compose-skill.mdc`:
