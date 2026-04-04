@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0] - 2026-04-04
+
+### Added
+- **Compose Multiplatform support**: CMP architecture guide, API availability matrix, expect/actual patterns, resource system (Res.*), migration from Android-only
+- **Platform-specifics guide**: Desktop (Window, Tray, MenuBar, Swing interop), iOS (UIKitView, lifecycle gotchas, binary size), Web/WASM (canvas limitations, no SEO)
+- **Design-to-compose guide**: Figma/screenshot decomposition algorithm, property mapping tables, spacing ownership rules, modifier ordering, design token mapping
+- **Production crash playbook**: 6 crash patterns with root cause + fix, defensive patterns (SafeShimmerItem, zero-size DrawScope guard, dedup keys), production state/performance rules
+- **CMP source code receipts**: Actual API signatures from `compose-multiplatform-core` for Desktop, iOS, Web entry points and interop
+- **Animation recipes**: Shimmer, staggered list entrance, swipe-to-dismiss, expandable card, pull-to-refresh, FAB morph, bottom sheet drag, parallax header, animated tabs
+- **Animation decision tree**: Which API for which scenario, rendering phase performance guidance
+- **Gesture-driven animations**: Swipe-to-dismiss with Animatable, AnchoredDraggable, transformable (pinch/zoom/rotate)
+- **Design-to-animation translation**: Figma easing curves to Compose, M3 motion tokens, spring parameter intuition, Figma spring conversion formula
+- **Predictive back gesture animation**: NavHost transitions, PredictiveBackHandler, M3 automatic support
+
+### Changed
+- Rebranded from "Jetpack Compose" to "Compose" to reflect multiplatform scope
+- SKILL.md: Updated name, description, triggers for CMP; added design-to-code workflow step; new reference routing entries; CMP source tree
+- README.md: Updated title, badges, coverage table, file structure
+- Animation guide: Fixed broken shared element transition code, added 9 recipes, gesture patterns, choreography, production spring specs, new anti-patterns
+- State management guide: Added `produceState`, `rememberUpdatedState`, sealed UiState pattern, production state rules, CMP state notes
+- Lists/scrolling guide: Added production crash patterns, collision prefix keys, dedupIndex, ReportDrawnWhen, device-specific pagination
+- View composition guide: Added 5-step decomposition methodology, Scaffold/screen patterns, composite previews, fixed CompositionLocal explanation, adaptive layouts
+- Performance guide: Added zero-size guard, composition tracing, movableContentOf, compiler report flags, production rules, CMP performance notes
+
+### Fixed
+- Shared element transition code now uses correct `SharedTransitionLayout` + `SharedTransitionScope` API
+- CompositionLocal explanation corrected: `staticCompositionLocalOf` invalidates entire subtree (not "for rarely changing values")
+- Removed incorrect `accompanist-permissions` deprecation claim (via PR #1 by @Daiji256)
+
 ## [1.1.0] - 2026-03-01
 
 ### Added

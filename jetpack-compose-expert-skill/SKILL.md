@@ -1,24 +1,28 @@
 ---
-name: jetpack-compose
+name: compose-expert
 description: >
-  Jetpack Compose expert skill for Android UI development. Guides state management decisions
-  (@Composable, remember, mutableStateOf, derivedStateOf, State hoisting), view composition
-  and structure, Modifier chains, lazy lists, navigation, animation, side effects, theming,
-  accessibility, and performance optimization. Backed by actual androidx source code analysis.
+  Compose and Compose Multiplatform expert skill for UI development across Android, Desktop,
+  iOS, and Web. Guides state management, view composition, animations, navigation, performance,
+  design-to-code workflows, and production crash patterns. Backed by actual source code analysis
+  from both androidx/androidx and JetBrains/compose-multiplatform-core.
   Use this skill whenever the user mentions Compose, @Composable, remember, LaunchedEffect,
   Scaffold, NavHost, MaterialTheme, LazyColumn, Modifier, recomposition, Style, styleable,
-  MutableStyleState, or any Jetpack Compose API. Also trigger when the user says "Android UI",
-  "Kotlin UI", "compose layout", "compose navigation", "compose animation", "material3",
-  "compose styles", "styles api", or asks about modern Android development patterns. Even
-  casual mentions like "my compose screen is slow" or "how do I pass data between screens"
+  MutableStyleState, Compose Multiplatform, CMP, KMP, commonMain, expect, actual,
+  ComposeUIViewController, Window composable, UIKitView, ComposeViewport, Res.drawable,
+  Res.string, or any Compose API. Also trigger when the user says "Android UI", "Kotlin UI",
+  "compose layout", "compose navigation", "compose animation", "material3", "compose styles",
+  "compose multiplatform", "desktop compose", "iOS compose", "compose web", "design to compose",
+  "build this UI", "implement this design", or asks about modern Kotlin UI development patterns.
+  Even casual mentions like "my compose screen is slow" or "how do I pass data between screens"
   should trigger this skill.
 ---
 
-# Jetpack Compose Expert Skill
+# Compose Expert Skill
 
-Non-opinionated, practical guidance for writing correct, performant Jetpack Compose code.
-Focuses on real pitfalls developers encounter daily, backed by analysis of the actual
-`androidx/androidx` source code (branch: `androidx-main`).
+Non-opinionated, practical guidance for writing correct, performant Compose code —
+across Android, Desktop, iOS, and Web. Covers Jetpack Compose and Compose Multiplatform.
+Backed by analysis of actual source code from `androidx/androidx` and
+`JetBrains/compose-multiplatform-core`.
 
 ## Workflow
 
@@ -27,8 +31,15 @@ When helping with Compose code, follow this checklist:
 ### 1. Understand the request
 - What Compose layer is involved? (Runtime, UI, Foundation, Material3, Navigation)
 - Is this a state problem, layout problem, performance problem, or architecture question?
+- Is this Android-only or Compose Multiplatform (CMP)?
 
-### 2. Consult the right reference
+### 2. Analyze the design (if visual reference provided)
+- If the user shares a Figma frame, screenshot, or design spec, consult `references/design-to-compose.md`
+- Decompose the design into a composable tree using the 5-step methodology
+- Map design tokens to MaterialTheme, spacing to CompositionLocals
+- Identify animation needs and consult `references/animation.md` for recipes
+
+### 3. Consult the right reference
 Read the relevant reference file(s) from `references/` before answering:
 
 | Topic | Reference File |
@@ -46,13 +57,17 @@ Read the relevant reference file(s) from `references/` before answering:
 | Semantics, content descriptions, traversal order, testing | `references/accessibility.md` |
 | Removed/replaced APIs, migration paths from older Compose versions | `references/deprecated-patterns.md` |
 | **Styles API** (experimental): `Style {}`, `MutableStyleState`, `Modifier.styleable()` | `references/styles-experimental.md` |
+| Figma/screenshot decomposition, design tokens, spacing, modifier ordering | `references/design-to-compose.md` |
+| Production crash patterns, defensive coding, state/performance rules | `references/production-crash-playbook.md` |
+| Compose Multiplatform, `expect`/`actual`, resources (`Res.*`), migration | `references/multiplatform.md` |
+| Desktop (Window, Tray, MenuBar), iOS (UIKitView), Web (ComposeViewport) | `references/platform-specifics.md` |
 
-### 3. Apply and verify
+### 4. Apply and verify
 - Write code that follows the patterns in the reference
 - Flag any anti-patterns you see in the user's existing code
 - Suggest the minimal correct solution — don't over-engineer
 
-### 4. Cite the source
+### 5. Cite the source
 When referencing Compose internals, point to the exact source file:
 ```
 // See: compose/runtime/runtime/src/commonMain/kotlin/androidx/compose/runtime/Composer.kt
@@ -75,12 +90,17 @@ When referencing Compose internals, point to the exact source file:
 5. **Side effects exist to bridge Compose's declarative world with imperative APIs**. Use the
    right one for the job — misusing them causes bugs that are hard to trace.
 
+6. **Compose Multiplatform shares the runtime but not the platform**. UI code in
+   `commonMain` is portable. Platform-specific APIs (`LocalContext`, `BackHandler`,
+   `Window`) require `expect`/`actual` or conditional source sets.
+
 ## Source Code Receipts
 
 Beyond the guidance docs, this skill bundles the **actual source code** from
-`androidx/androidx` (branch: `androidx-main`). When you need to verify how something
-works internally, or the user asks "show me the actual implementation", read
-the raw source from `references/source-code/`:
+`androidx/androidx` (branch: `androidx-main`) and `JetBrains/compose-multiplatform-core`
+(branch: `jb-main`). When you need to verify how something works internally, or the
+user asks "show me the actual implementation", read the raw source from
+`references/source-code/`:
 
 | Module | Source Reference | Key Files Inside |
 |--------|-----------------|------------------|
@@ -89,6 +109,7 @@ the raw source from `references/source-code/`:
 | Foundation | `references/source-code/foundation-source.md` | LazyList.kt, LazyGrid.kt, BasicTextField.kt, Clickable.kt, Scrollable.kt, Pager.kt |
 | Material3 | `references/source-code/material3-source.md` | MaterialTheme.kt, ColorScheme.kt, Button.kt, Scaffold.kt, TextField.kt, NavigationBar.kt |
 | Navigation | `references/source-code/navigation-source.md` | NavHost.kt, ComposeNavigator.kt, NavGraphBuilder.kt, DialogNavigator.kt |
+| CMP | `references/source-code/cmp-source.md` | Window.kt, ComposeUIViewController.kt, UIKitView.kt, ComposeViewport.kt, ResourceReader.kt |
 
 ### Two-layer approach
 1. **Start with guidance** — read the topic-specific reference (e.g., `references/state-management.md`)
@@ -96,11 +117,21 @@ the raw source from `references/source-code/`:
 
 ### Source tree map
 ```
-compose/
-├── runtime/runtime/src/commonMain/kotlin/androidx/compose/runtime/
-├── ui/ui/src/androidMain/kotlin/androidx/compose/ui/platform/
-├── ui/ui/src/commonMain/kotlin/androidx/compose/ui/
-├── foundation/foundation/src/commonMain/kotlin/androidx/compose/foundation/
-├── material3/material3/src/commonMain/kotlin/androidx/compose/material3/
-└── navigation/navigation-compose/src/commonMain/kotlin/androidx/navigation/compose/
+androidx/androidx (branch: androidx-main)
+├── compose/runtime/runtime/src/commonMain/kotlin/androidx/compose/runtime/
+├── compose/ui/ui/src/androidMain/kotlin/androidx/compose/ui/platform/
+├── compose/ui/ui/src/commonMain/kotlin/androidx/compose/ui/
+├── compose/foundation/foundation/src/commonMain/kotlin/androidx/compose/foundation/
+├── compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/
+└── compose/navigation/navigation-compose/src/commonMain/kotlin/androidx/navigation/compose/
+
+compose-multiplatform-core (branch: jb-main)
+├── compose/ui/ui/src/desktopMain/kotlin/androidx/compose/ui/window/
+├── compose/ui/ui/src/iosMain/kotlin/androidx/compose/ui/window/
+├── compose/ui/ui/src/webMain/kotlin/androidx/compose/ui/window/
+├── compose/ui/ui/src/skikoMain/kotlin/androidx/compose/ui/
+└── compose/foundation/foundation/src/skikoMain/kotlin/androidx/compose/foundation/
+
+compose-multiplatform (resources library)
+└── components/resources/library/src/commonMain/
 ```

@@ -2,17 +2,18 @@
   <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/jetpackcompose/jetpackcompose-original.svg" width="80" alt="Jetpack Compose logo"/>
 </p>
 
-<h1 align="center">Jetpack Compose Agent Skill</h1>
+<h1 align="center">Compose Agent Skill</h1>
 
 <p align="center">
-  Make your AI coding tool actually understand Compose.<br/>
-  Backed by real <code>androidx/androidx</code> source code — not vibes.
+  Make your AI coding tool actually understand Compose — Android, Desktop, iOS, and Web.<br/>
+  Backed by real source code from <code>androidx/androidx</code> and <code>compose-multiplatform-core</code> — not vibes.
 </p>
 
 <p align="center">
   <a href="#setup"><img src="https://img.shields.io/badge/setup-5%20min-brightgreen" alt="Setup time"/></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="License"/></a>
   <a href="https://developer.android.com/jetpack/compose"><img src="https://img.shields.io/badge/Jetpack%20Compose-1.7+-4285F4" alt="Compose version"/></a>
+  <a href="https://www.jetbrains.com/lp/compose-multiplatform/"><img src="https://img.shields.io/badge/Compose%20Multiplatform-1.8+-7F52FF" alt="CMP version"/></a>
   <a href="https://kotlinlang.org"><img src="https://img.shields.io/badge/Kotlin-2.0+-7F52FF" alt="Kotlin version"/></a>
 </p>
 
@@ -24,10 +25,8 @@ AI coding tools generate Compose code that compiles but gets the details wrong. 
 
 This skill fixes that by giving your AI assistant two things:
 
-1. **13 reference guides** covering every major Compose topic with do/don't examples and common pitfalls
-2. **5 source code files** pulled directly from [`androidx/androidx`](https://github.com/androidx/androidx/tree/androidx-main/compose) so the agent can check how things actually work
-
-Think of it as the Compose equivalent of [AvdLee/SwiftUI-Agent-Skill](https://github.com/AvdLee/SwiftUI-Agent-Skill) — same idea, Android/Kotlin world.
+1. **17 reference guides** covering every major Compose topic — including Compose Multiplatform, design-to-code workflows, animation recipes, and production crash patterns
+2. **6 source code files** pulled directly from [`androidx/androidx`](https://github.com/androidx/androidx/tree/androidx-main/compose) and [`compose-multiplatform-core`](https://github.com/JetBrains/compose-multiplatform-core) so the agent can check how things actually work
 
 ## What changes when you install it
 
@@ -39,6 +38,9 @@ Think of it as the Compose equivalent of [AvdLee/SwiftUI-Agent-Skill](https://gi
 | Modifiers | Random ordering, misses `clickable` before `padding` bugs | Correct ordering with reasoning |
 | Side effects | Wrong coroutine scope, bad `LaunchedEffect` keys | Correct effect selection and lifecycle-aware keys |
 | APIs | Hallucinates parameters that don't exist | Checks against actual source before suggesting |
+| Multiplatform | Uses Android-only APIs in shared code | Uses `expect`/`actual`, `Res.*` resources, platform-correct patterns |
+| Design-to-code | Literal Figma node translation, wrong modifier ordering | Semantic M3 components, correct ordering, theme tokens |
+| Crash safety | No defensive patterns | Guards against zero-size DrawScope, duplicate keys, stale `derivedStateOf` |
 
 ## What's covered
 
@@ -48,7 +50,7 @@ Think of it as the Compose equivalent of [AvdLee/SwiftUI-Agent-Skill](https://gi
 | View composition | Structuring composables, slot APIs, `@Preview` patterns, extraction rules |
 | Performance | Recomposition skipping, `@Stable`/`@Immutable`, deferred reads, baseline profiles, benchmarking |
 | Navigation | Type-safe routes, `NavHost`, deep links, shared element transitions, back stack |
-| Animation | `animate*AsState`, `AnimatedVisibility`, `Crossfade`, `updateTransition`, shared transitions |
+| Animation | `animate*AsState`, `AnimatedVisibility`, `Crossfade`, `updateTransition`, shared transitions, 9 recipes (shimmer, swipe-to-dismiss, etc.), gesture-driven patterns, Figma curve mapping |
 | Lists and scrolling | `LazyColumn`/`LazyRow`/`LazyGrid`, `Pager`, `key {}`, `contentType`, scroll state |
 | Side effects | `LaunchedEffect`, `DisposableEffect`, `SideEffect`, `rememberCoroutineScope` |
 | Modifiers | Ordering rules, custom modifiers, `Modifier.Node` migration |
@@ -57,7 +59,11 @@ Think of it as the Compose equivalent of [AvdLee/SwiftUI-Agent-Skill](https://gi
 | CompositionLocals | `LocalContext`, `LocalDensity`, custom locals, when to use vs. parameter passing |
 | Deprecated patterns | Removed APIs, migration paths from older Compose versions |
 | **Styles API (experimental)** | `Style {}`, `MutableStyleState`, `Modifier.styleable()`, composition, theme integration, alpha06 gotchas |
-| Source code | Actual `.kt` from `androidx/androidx` for runtime, UI, foundation, material3, navigation |
+| **Design-to-code** | Composable decomposition algorithm, Figma property mapping, spacing ownership, modifier ordering, design tokens |
+| **Production crash playbook** | 6 crash patterns with root cause + fix, defensive patterns, production state/performance rules |
+| **Compose Multiplatform** | CMP architecture, `expect`/`actual`, `Res.*` resources, API availability matrix, migration guide |
+| **Platform specifics** | Desktop (Window, Tray, MenuBar), iOS (UIKitView, gotchas), Web/WASM (canvas limitations) |
+| Source code | Actual `.kt` from `androidx/androidx` and `compose-multiplatform-core` for runtime, UI, foundation, material3, navigation, CMP |
 
 ## How it works
 
@@ -73,17 +79,22 @@ You ask about Compose
         +-- state-management.md
         +-- performance.md
         +-- navigation.md
-        +-- ... (12 guides total)
+        +-- design-to-compose.md
+        +-- production-crash-playbook.md
+        +-- multiplatform.md
+        +-- platform-specifics.md
+        +-- ... (17 guides total)
         |
         +-- source-code/
               +-- runtime-source.md
               +-- material3-source.md
-              +-- ... (5 source files)
+              +-- cmp-source.md
+              +-- ... (6 source files)
 ```
 
-**Layer 1: guidance docs** (13 files, ~130KB) — practical references with patterns, pitfalls, and do/don't examples. This is what the agent reads first.
+**Layer 1: guidance docs** (17 files) — practical references with patterns, pitfalls, and do/don't examples. This is what the agent reads first.
 
-**Layer 2: source code receipts** (5 files, ~2.3MB) — the actual Kotlin source from `androidx/androidx` (branch: `androidx-main`). When the agent needs to verify an implementation detail rather than guess, it reads these.
+**Layer 2: source code receipts** (6 files) — the actual Kotlin source from `androidx/androidx` and `compose-multiplatform-core`. When the agent needs to verify an implementation detail rather than guess, it reads these.
 
 ## File structure
 
@@ -104,12 +115,17 @@ jetpack-compose-expert-skill/
     ├── accessibility.md                  # Semantics, content descriptions, testing
     ├── deprecated-patterns.md            # Removed APIs, migration paths
     ├── styles-experimental.md           # Styles API (@ExperimentalFoundationStyleApi)
-    └── source-code/                      # Actual .kt source from androidx/androidx
+    ├── design-to-compose.md             # Figma/screenshot decomposition, property mapping
+    ├── production-crash-playbook.md     # Crash patterns, defensive coding, production rules
+    ├── multiplatform.md                 # CMP architecture, expect/actual, Res.*, migration
+    ├── platform-specifics.md            # Desktop, iOS, Web/WASM platform APIs and gotchas
+    └── source-code/                      # Actual .kt source
         ├── runtime-source.md             # Composer, Recomposer, State, Effects
         ├── ui-source.md                  # AndroidCompositionLocals, Modifier, Layout
         ├── foundation-source.md          # LazyList, BasicTextField, Gestures
         ├── material3-source.md           # MaterialTheme, all M3 components
-        └── navigation-source.md          # NavHost, ComposeNavigator
+        ├── navigation-source.md          # NavHost, ComposeNavigator
+        └── cmp-source.md                # Window, UIKitView, ComposeViewport, Resources
 ```
 
 ## Setup
@@ -282,19 +298,19 @@ No hallucinated APIs. No guessed behavior.
 
 ## Source
 
-All source code comes from [`androidx/androidx`](https://github.com/androidx/androidx/tree/androidx-main/compose) under Apache License 2.0. The guidance docs are original analysis of those sources plus official Android documentation.
+Source code comes from [`androidx/androidx`](https://github.com/androidx/androidx/tree/androidx-main/compose) and [`JetBrains/compose-multiplatform-core`](https://github.com/JetBrains/compose-multiplatform-core) under Apache License 2.0. The guidance docs are original analysis of those sources plus official documentation.
 
 ## Contributing
 
 PRs welcome, especially:
-- Coverage for new Compose APIs or patterns
-- Corrections based on newer Compose releases
-- Additional source files for gaps
-- Compose Multiplatform (Desktop, iOS, Web) guidance
-- Auto-update tooling for tracking new `androidx` releases
+- Additional platform-specific gotchas and workarounds
+- New animation recipes for common UI patterns
+- Production crash patterns from real apps
+- Corrections based on newer Compose/CMP releases
+- Auto-update tooling for tracking new releases
 
 ## License
 
 MIT — see [LICENSE](LICENSE).
 
-Source code from `androidx/androidx` is Apache License 2.0, copyright The Android Open Source Project.
+Source code from `androidx/androidx` is Apache License 2.0, copyright The Android Open Source Project. Source code from `compose-multiplatform-core` is Apache License 2.0, copyright JetBrains s.r.o.

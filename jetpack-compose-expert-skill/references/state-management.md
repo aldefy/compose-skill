@@ -375,3 +375,206 @@ val onButtonClick = { value++ }
 ---
 
 **Source references:** `androidx.compose.runtime.State`, `androidx.compose.runtime.saveable`, `androidx.lifecycle.runtime.compose`
+
+---
+
+## produceState
+
+Bridge between suspend functions and Compose state:
+
+```kotlin
+@Composable
+fun UserProfile(userId: String): State<User?> = produceState<User?>(initialValue = null, userId) {
+    value = repository.getUser(userId)
+}
+```
+
+Use when you need to convert a suspend function result into observable State. The coroutine is scoped to the composition and cancelled when the composable leaves.
+
+Can also observe flows:
+```kotlin
+@Composable
+fun NetworkStatus(): State<Boolean> = produceState(initialValue = false) {
+    connectivityManager.observeNetworkState().collect { value = it }
+}
+```
+
+---
+
+## rememberUpdatedState
+
+Capture latest callback value in long-running effects:
+
+```kotlin
+@Composable
+fun Timer(onTimeout: () -> Unit) {
+    val currentOnTimeout by rememberUpdatedState(onTimeout)
+    LaunchedEffect(true) {
+        delay(5000L)
+        currentOnTimeout() // Always calls the latest onTimeout, even if it changed
+    }
+}
+```
+
+Use when: a LaunchedEffect captures a callback that might change, but you don't want to restart the effect. Without `rememberUpdatedState`, the effect would use the stale original callback or need to restart on every callback change.
+
+---
+
+## Sealed UiState Pattern
+
+```kotlin
+sealed interface UiState<out T> {
+    data object Loading : UiState<Nothing>
+    data class Success<T>(val data: T) : UiState<T>
+    data class Error(val message: String) : UiState<Nothing>
+}
+```
+
+Smart-cast safety:
+```kotlin
+// BAD: smart cast can fail if uiState changes between check and usage
+if (uiState is UiState.Success) {
+    Content((uiState as UiState.Success).data) // Unsafe cast
+}
+
+// GOOD: val capture for safe smart cast
+when (val state = uiState) {
+    is UiState.Loading -> LoadingIndicator()
+    is UiState.Success -> Content(state.data) // Safe smart cast via val
+    is UiState.Error -> ErrorMessage(state.message)
+}
+```
+
+---
+
+## State Holder Class Pattern
+
+For complex screens with multiple interrelated state values, create a state holder:
+
+```kotlin
+@Composable
+fun rememberSearchState(
+    listState: LazyListState = rememberLazyListState(),
+    coroutineScope: CoroutineScope = rememberCoroutineScope()
+): SearchState = remember(listState, coroutineScope) {
+    SearchState(listState, coroutineScope)
+}
+
+@Stable
+class SearchState(
+    val listState: LazyListState,
+    private val coroutineScope: CoroutineScope
+) {
+    var query by mutableStateOf("")
+        private set
+
+    val isScrolled: Boolean
+        get() = listState.firstVisibleItemIndex > 0
+
+    fun updateQuery(newQuery: String) { query = newQuery }
+    fun scrollToTop() { coroutineScope.launch { listState.animateScrollToItem(0) } }
+}
+```
+
+This pattern (used by `rememberScrollState`, `rememberDrawerState`, etc.) groups related state and logic into a single class, avoiding parameter bloat in composables.
+
+---
+
+## Production State Rules
+
+### 1. mutableStateOf ONLY in composables, never in ViewModels
+
+```kotlin
+// BAD: Compose state in ViewModel couples VM to Compose runtime
+class MyViewModel : ViewModel() {
+    var name by mutableStateOf("") // Don't do this
+}
+
+// GOOD: StateFlow in ViewModel — framework-agnostic, testable
+class MyViewModel : ViewModel() {
+    private val _name = MutableStateFlow("")
+    val name = _name.asStateFlow()
+
+    fun updateName(new: String) { _name.value = new }
+}
+```
+
+### 2. SharedFlow for one-shot events, NOT Channel
+
+```kotlin
+// GOOD: SharedFlow with buffer for one-shot events
+private val _events = MutableSharedFlow<AppEvent>(extraBufferCapacity = 1)
+val events = _events.asSharedFlow()
+
+// Emit from ViewModel
+fun onAction() { _events.tryEmit(AppEvent.ShowSnackbar("Done")) }
+
+// Collect in composable
+LaunchedEffect(Unit) {
+    viewModel.events.collect { event ->
+        when (event) {
+            is AppEvent.ShowSnackbar -> snackbarHostState.showSnackbar(event.message)
+            is AppEvent.Navigate -> onNavigate(event.route)
+        }
+    }
+}
+```
+
+### 3. rememberSaveable only at NavGraph level
+
+Use `rememberSaveable` for screen-level state (search query, tab selection) at the NavGraph entry point, not deep inside composable trees where it adds unnecessary persistence overhead.
+
+### 4. snapshotFlow + distinctUntilChanged() for reactive scroll
+
+```kotlin
+LaunchedEffect(listState) {
+    snapshotFlow { listState.firstVisibleItemIndex }
+        .distinctUntilChanged()
+        .collect { index -> viewModel.onScrollPositionChanged(index) }
+}
+```
+
+### 5. .stateIn() with .map() for derived flows
+
+```kotlin
+val filteredItems = repository.items
+    .map { items -> items.filter { it.isActive } }
+    .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+```
+
+---
+
+## Compose Multiplatform Notes
+
+### rememberSaveable and Bundle
+
+`rememberSaveable`, `Bundle`, and `@Parcelize` are **Android-only**. On CMP targets:
+
+```kotlin
+// Android: @Parcelize works
+@Parcelize
+data class SearchParams(val query: String, val filters: List<String>) : Parcelable
+
+// CMP: use @Serializable instead
+@Serializable
+data class SearchParams(val query: String, val filters: List<String>)
+```
+
+For state persistence across configuration changes in CMP, use kotlinx.serialization-based custom `Saver` implementations.
+
+### collectAsStateWithLifecycle
+
+`collectAsStateWithLifecycle()` is in `androidx.lifecycle:lifecycle-runtime-compose` -- it's Android-specific.
+
+```kotlin
+// Android: lifecycle-aware, stops collecting when paused
+val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+// CMP commonMain: basic collection, does NOT stop in background
+val state by viewModel.uiState.collectAsState()
+
+// CMP with multiplatform lifecycle (lifecycle-runtime-compose:2.10.0+):
+// collectAsStateWithLifecycle() available in commonMain
+```
+
+On CMP without the multiplatform lifecycle library, flows continue collecting when the app is backgrounded -- be aware of battery and performance implications.
