@@ -55,24 +55,6 @@ enableEdgeToEdge()
 
 ---
 
-## `accompanist-permissions` → `activity-compose`
-
-**Old:**
-```kotlin
-val permissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
-```
-
-**New:**
-```kotlin
-val permissionState = rememberPermissionState(android.Manifest.permission.CAMERA) {
-    // callback when permission changes
-}
-```
-
-**Migration notes:** Functionality moved to `androidx.activity:activity-compose`. The API is largely identical; main change is dependency update. For multiple permissions, use `rememberMultiplePermissionsState()`.
-
----
-
 ## `accompanist-pager` → `HorizontalPager`/`VerticalPager`
 
 **Old:**
