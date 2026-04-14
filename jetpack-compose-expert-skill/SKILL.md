@@ -12,9 +12,11 @@ description: >
   Res.string, or any Compose API. Also trigger when the user says "Android UI", "Kotlin UI",
   "compose layout", "compose navigation", "compose animation", "material3", "compose styles",
   "compose multiplatform", "desktop compose", "iOS compose", "compose web", "design to compose",
-  "build this UI", "implement this design", or asks about modern Kotlin UI development patterns.
+  "build this UI", "implement this design", "Android TV", "Google TV", "tv-material",
+  "tv-foundation", "Carousel", "NavigationDrawer", "D-pad", "focus indication",
+  "10-foot UI", "living room", "tv compose", or asks about modern Kotlin UI development patterns.
   Even casual mentions like "my compose screen is slow" or "how do I pass data between screens"
-  should trigger this skill.
+  or "how do I build a TV app" should trigger this skill.
 ---
 
 # Compose Expert Skill
@@ -61,6 +63,7 @@ Read the relevant reference file(s) from `references/` before answering:
 | Production crash patterns, defensive coding, state/performance rules | `references/production-crash-playbook.md` |
 | Compose Multiplatform, `expect`/`actual`, resources (`Res.*`), migration | `references/multiplatform.md` |
 | Desktop (Window, Tray, MenuBar), iOS (UIKitView), Web (ComposeViewport) | `references/platform-specifics.md` |
+| TV Compose: Surface, Carousel, NavigationDrawer, Cards, focus, D-pad | `references/tv-compose.md` |
 
 ### 4. Apply and verify
 - Write code that follows the patterns in the reference
@@ -123,7 +126,9 @@ androidx/androidx (branch: androidx-main)
 ├── compose/ui/ui/src/commonMain/kotlin/androidx/compose/ui/
 ├── compose/foundation/foundation/src/commonMain/kotlin/androidx/compose/foundation/
 ├── compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/
-└── compose/navigation/navigation-compose/src/commonMain/kotlin/androidx/navigation/compose/
+├── compose/navigation/navigation-compose/src/commonMain/kotlin/androidx/navigation/compose/
+├── tv/tv-material/src/main/java/androidx/tv/material3/
+└── tv/tv-foundation/src/main/java/androidx/tv/foundation/
 
 compose-multiplatform-core (branch: jb-main)
 ├── compose/ui/ui/src/desktopMain/kotlin/androidx/compose/ui/window/
