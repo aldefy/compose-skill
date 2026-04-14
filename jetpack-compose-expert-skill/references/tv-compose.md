@@ -38,7 +38,7 @@ dependencies {
 
 | Requirement | Value |
 |-------------|-------|
-| Min API level | 21 (Android 5.0) |
+| Min API level | 21 (Android 5.0) — library minimum; practical Google TV / Android TV device minimum is API 23–28 in production |
 | Compose BOM | 2026.03.00+ |
 | Kotlin | 2.0+ (KGP 2.0.0+ required for consumption) |
 | tv-material stable | 1.0.0 (first stable August 2024) |
@@ -194,12 +194,13 @@ ClassicCard(
     description = { Text(movie.description, maxLines = 2) }
 )
 
-// StandardCardContainer — layout wrapper (image top, content bottom)
+// StandardCardContainer — layout wrapper (image top, content below)
+// Note: as of tv-material 1.0.0 stable, interactionSource is managed internally by the card.
+// The imageCard slot is a plain @Composable lambda with no interactionSource parameter.
 StandardCardContainer(
-    imageCard = { interactionSource ->
+    imageCard = {
         Card(
-            onClick = { /* navigate */ },
-            interactionSource = interactionSource
+            onClick = { /* navigate */ }
         ) {
             AsyncImage(
                 model = movie.thumbnailUrl,
@@ -231,7 +232,7 @@ fun FeaturedCarousel(
         // Optional: remember state to control or observe active item
         // carouselState = rememberCarouselState(),
         // autoScrollDurationMillis = CarouselDefaults.TimeToDisplayItemMillis (5000ms)
-    ) { index ->
+    ) { index -> // this: AnimatedContentScope — use Modifier.animateEnterExit() inside here
         val movie = featuredContent[index]
         Box(modifier = Modifier.fillMaxSize()) {
             AsyncImage(
@@ -273,7 +274,7 @@ fun FeaturedCarousel(
 
 Key points:
 - `CarouselState` controls which item is shown; use `rememberCarouselState()` to persist
-- `pauseAutoScroll` / `resumeAutoScroll` via `ScrollPauseHandle` — auto-scroll pauses when user interacts
+- Auto-scroll pauses automatically when the user interacts via D-pad — there is no public API to pause/resume it programmatically (`ScrollPauseHandle` is internal)
 - Content inside the carousel lambda receives an `AnimatedContentScope` — use `Modifier.animateEnterExit()` for slide/fade effects
 - Custom slide transitions via `contentTransformStartToEnd` and `contentTransformEndToStart` parameters
 
@@ -296,6 +297,7 @@ IconButton(onClick = { /* action */ }) {
 }
 
 // Wide button (full-width with icon + text + subtitle)
+// Note: WideButton is available in tv-material 1.1.0-rc01+. Verify availability before use.
 WideButton(
     onClick = { /* action */ },
     title = { Text("Continue Watching") },
@@ -492,17 +494,12 @@ LaunchedEffect(Unit) {
     focusRequester.requestFocus()
 }
 
-// Customize focus traversal
+// Customize D-pad directional focus traversal
+// Use up/down/left/right — NOT enter/exit (those control FocusGroup enter/exit, not D-pad directions)
 Modifier.focusProperties {
-    // Override D-pad behavior
-    enter = {
-        // Called when focus enters this composable
-        FocusRequester.Default
-    }
-    exit = {
-        // Called when focus exits this composable
-        FocusRequester.Default
-    }
+    right = customFocusRequester    // override where right D-pad goes
+    left = FocusRequester.Cancel    // block left navigation
+    // up / down also available
 }
 
 // Focus restoration — remember which child had focus
@@ -604,6 +601,8 @@ Override default scroll behavior to keep focused items at a consistent position 
 the left edge instead of just scrolling to make the item visible):
 
 ```kotlin
+// Both the composable function AND the CompositionLocalProvider call inside require
+// @OptIn(ExperimentalFoundationApi::class) — annotate the whole function.
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PositionFocusedItemInLazyLayout(
@@ -669,6 +668,7 @@ TV `MaterialTheme` mirrors the mobile Material3 theming system but is defined in
 @Composable
 fun TvAppTheme(content: @Composable () -> Unit) {
     // TV apps typically use dark themes for the living room
+    // Import darkColorScheme from androidx.tv.material3 — NOT androidx.compose.material3
     val colorScheme = darkColorScheme(
         primary = Color(0xFFBB86FC),
         onPrimary = Color.Black,
@@ -702,7 +702,7 @@ fun TvAppTheme(content: @Composable () -> Unit) {
 ```
 
 Key differences from mobile theming:
-- Import `MaterialTheme` from `androidx.tv.material3`, not `androidx.compose.material3`
+- Import `MaterialTheme` **and** `darkColorScheme`/`lightColorScheme` from `androidx.tv.material3`, not `androidx.compose.material3`
 - TV apps almost always use `darkColorScheme()` — living rooms are dark environments
 - Typography sizes should be larger for 10-foot viewing distance (16sp minimum body text)
 - `Shapes` from `androidx.tv.material3` — same concept, TV-specific defaults
@@ -770,22 +770,27 @@ fun ImmersiveMovieRow(
             Spacer(Modifier.height(16.dp))
             LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(movies, key = { it.id }) { movie ->
-                    Card(
-                        onClick = { /* navigate to detail */ },
+                    // Wrap Card in a Box — onFocusChanged on an interactive TV Surface
+                    // may not fire reliably. Apply it to a non-interactive wrapper instead.
+                    Box(
                         modifier = Modifier
                             .size(width = 160.dp, height = 90.dp)
                             .onFocusChanged { state ->
-                                if (state.isFocused) focusedMovie = movie
+                                if (state.hasFocus) focusedMovie = movie
                             }
                     ) {
-                        AsyncImage(
-                            model = movie.thumbnailUrl,
-                            contentDescription = movie.title,
-                            contentScale = ContentScale.Crop,
+                        Card(
+                            onClick = { /* navigate to detail */ },
                             modifier = Modifier.fillMaxSize()
-                        )
+                        ) {
+                            AsyncImage(
+                                model = movie.thumbnailUrl,
+                                contentDescription = movie.title,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
                     }
-                }
             }
         }
     }
@@ -851,25 +856,28 @@ fun DetailsScreen(
 screen. This is not Compose UI — it's a content provider API used alongside your Compose app.
 
 ```kotlin
-// Add a preview channel to the home screen
-val channel = PreviewChannel.Builder()
-    .setDisplayName("Continue Watching")
-    .setAppLinkIntentUri(Uri.parse("myapp://home"))
-    .build()
+// IMPORTANT: publishChannel / publishPreviewProgram perform I/O — call from a background
+// coroutine (Dispatchers.IO) or a WorkManager task, never from the main thread.
+// Example using a coroutine:
+viewModelScope.launch(Dispatchers.IO) {
+    val channel = PreviewChannel.Builder()
+        .setDisplayName("Continue Watching")
+        .setAppLinkIntentUri(Uri.parse("myapp://home"))
+        .build()
 
-val channelId = PreviewChannelHelper(context).publishChannel(channel)
+    val channelId = PreviewChannelHelper(context).publishChannel(channel)
 
-// Add a program to the channel
-val program = PreviewProgram.Builder()
-    .setChannelId(channelId)
-    .setTitle("Movie Title")
-    .setDescription("Episode 3")
-    .setPosterArtUri(Uri.parse("https://example.com/poster.jpg"))
-    .setIntentUri(Uri.parse("myapp://movie/123"))
-    .setType(TvContractCompat.PreviewPrograms.TYPE_MOVIE)
-    .build()
+    val program = PreviewProgram.Builder()
+        .setChannelId(channelId)
+        .setTitle("Movie Title")
+        .setDescription("Episode 3")
+        .setPosterArtUri(Uri.parse("https://example.com/poster.jpg"))
+        .setIntentUri(Uri.parse("myapp://movie/123"))
+        .setType(TvContractCompat.PreviewPrograms.TYPE_MOVIE)
+        .build()
 
-PreviewChannelHelper(context).publishPreviewProgram(program)
+    PreviewChannelHelper(context).publishPreviewProgram(program)
+}
 ```
 
 ---
