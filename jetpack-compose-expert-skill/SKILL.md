@@ -14,9 +14,10 @@ description: >
   "compose multiplatform", "desktop compose", "iOS compose", "compose web", "design to compose",
   "build this UI", "implement this design", "Android TV", "Google TV", "tv-material",
   "tv-foundation", "Carousel", "NavigationDrawer", "D-pad", "focus indication",
-  "10-foot UI", "living room", "tv compose", or asks about modern Kotlin UI development patterns.
-  Even casual mentions like "my compose screen is slow" or "how do I pass data between screens"
-  or "how do I build a TV app" should trigger this skill.
+  "10-foot UI", "living room", "tv compose", "review this PR", "review this code",
+  "check this diff", or any GitHub PR URL (github.com/.*/pull/), or asks about modern
+  Kotlin UI development patterns. Even casual mentions like "my compose screen is slow"
+  or "how do I pass data between screens" or "how do I build a TV app" should trigger this skill.
 ---
 
 # Compose Expert Skill
@@ -25,6 +26,17 @@ Non-opinionated, practical guidance for writing correct, performant Compose code
 across Android, Desktop, iOS, and Web. Covers Jetpack Compose and Compose Multiplatform.
 Backed by analysis of actual source code from `androidx/androidx` and
 `JetBrains/compose-multiplatform-core`.
+
+## Review Mode
+
+**Activate when** the input contains a GitHub PR URL (`github.com/.+/pull/\d+`) or
+explicit review phrases: "review this PR", "review this diff", "check this code",
+"what's wrong with this".
+
+When Review Mode activates:
+1. Do **not** follow the generation workflow below
+2. Read `references/pr-review.md` and follow its workflow exclusively
+3. Output a structured local review report — do not post to GitHub
 
 ## Workflow
 
@@ -53,8 +65,8 @@ Read the relevant reference file(s) from `references/` before answering:
 | `CompositionLocal`, `LocalContext`, `LocalDensity`, custom locals | `references/composition-locals.md` |
 | `LazyColumn`, `LazyRow`, `LazyGrid`, `Pager`, keys, content types | `references/lists-scrolling.md` |
 | `NavHost`, type-safe routes, deep links, shared element transitions | `references/navigation.md` |
-| `animate*AsState`, `AnimatedVisibility`, `Crossfade`, transitions | `references/animation.md` |
-| `MaterialTheme`, `ColorScheme`, dynamic color, `Typography`, shapes | `references/theming-material3.md` |
+| `animate*AsState`, `AnimatedVisibility`, `Crossfade`, transitions | `references/animation.md` — for M3 token selection, also see `references/material3-motion.md` |
+| `MaterialTheme`, `ColorScheme`, dynamic color, `Typography`, shapes | `references/theming-material3.md` — for motion in M3 components, see `references/material3-motion.md` |
 | Recomposition skipping, stability, baseline profiles, benchmarking | `references/performance.md` |
 | Semantics, content descriptions, traversal order, testing | `references/accessibility.md` |
 | Removed/replaced APIs, migration paths from older Compose versions | `references/deprecated-patterns.md` |
@@ -64,6 +76,8 @@ Read the relevant reference file(s) from `references/` before answering:
 | Compose Multiplatform, `expect`/`actual`, resources (`Res.*`), migration | `references/multiplatform.md` |
 | Desktop (Window, Tray, MenuBar), iOS (UIKitView), Web (ComposeViewport) | `references/platform-specifics.md` |
 | TV Compose: Surface, Carousel, NavigationDrawer, Cards, focus, D-pad | `references/tv-compose.md` |
+| M3 motion tokens, `MotionTokens`, `MotionScheme`, animation duration, easing | `references/material3-motion.md` |
+| PR URL, code review, "review this PR", "what's wrong with this" | `references/pr-review.md` |
 
 ### 4. Apply and verify
 - Write code that follows the patterns in the reference
