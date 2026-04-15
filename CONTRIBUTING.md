@@ -9,7 +9,7 @@ tag push. Maintainer flow:
 1. **Bump the five version locations** to the new semver string (e.g. `2.2.0`):
    - `.claude-plugin/plugin.json` → `version`
    - `.copilot/plugin.yaml` → `version`
-   - `jetpack-compose-expert-skill/SKILL.md` → frontmatter `version:`
+   - `skills/compose-expert/SKILL.md` → frontmatter `version:`
    - The git tag you will push (e.g. `v2.2.0`)
    - `CHANGELOG.md` → new `## [2.2.0] - YYYY-MM-DD` heading
 2. **Update `CHANGELOG.md`** with an entry that includes, for any breaking

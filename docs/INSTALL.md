@@ -25,7 +25,7 @@ Codex does not have a native plugin system yet. Manual install:
 
 ```
 git clone https://github.com/aldefy/compose-skill ~/.codex/skills-src/compose-skill
-ln -s ~/.codex/skills-src/compose-skill/jetpack-compose-expert-skill ~/.codex/skills/compose-expert
+ln -s ~/.codex/skills-src/compose-skill/skills/compose-expert ~/.codex/skills/compose-expert
 ```
 
 Update later with `cd ~/.codex/skills-src/compose-skill && git pull`.

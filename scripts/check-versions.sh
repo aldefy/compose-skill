@@ -23,7 +23,7 @@ check "plugin.json" "$pj"
 py=$(yq -r .version .copilot/plugin.yaml 2>/dev/null || echo "missing")
 check "plugin.yaml" "$py"
 
-sm=$(awk '/^---$/{c++; next} c==1 && /^version:/{print $2; exit}' jetpack-compose-expert-skill/SKILL.md)
+sm=$(awk '/^---$/{c++; next} c==1 && /^version:/{print $2; exit}' skills/compose-expert/SKILL.md)
 check "SKILL.md" "$sm"
 
 if ! grep -qE "^## \[${EXPECTED}\]" CHANGELOG.md; then
