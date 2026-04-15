@@ -1,0 +1,57 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Assert version consistency
+        run: bash scripts/check-versions.sh "${GITHUB_REF_NAME}"
+
+      - name: Extract CHANGELOG section for this version
+        id: changelog
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          awk -v ver="## [${VERSION}]" '
+            $0 ~ ver {flag=1; next}
+            /^## \[/ && flag {exit}
+            flag {print}
+          ' CHANGELOG.md > release_body.md
+          echo "--- extracted release body ---"
+          cat release_body.md
+
+      - name: Prepend install/update header
+        run: |
+          {
+            echo "## Install / Update"
+            echo
+            echo "- **Claude Code:** \`/plugin update compose-expert\`"
+            echo "- **Copilot CLI:** \`copilot plugin update aldefy/compose-skill\`"
+            echo "- **Codex CLI:** \`git pull\` in your cloned skills dir"
+            echo
+            echo "---"
+            echo
+            cat release_body.md
+          } > final_body.md
+          mv final_body.md release_body.md
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: release_body.md
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-rc') || contains(github.ref_name, '-beta') }}
