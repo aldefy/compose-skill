@@ -18,6 +18,7 @@ description: >
   "check this diff", or any GitHub PR URL (github.com/.*/pull/), or asks about modern
   Kotlin UI development patterns. Even casual mentions like "my compose screen is slow"
   or "how do I pass data between screens" or "how do I build a TV app" should trigger this skill.
+  Also trigger on session_start to auto-detect Compose projects — see references/auto-init.md.
 ---
 
 # Compose Expert Skill
@@ -78,6 +79,7 @@ Read the relevant reference file(s) from `references/` before answering:
 | TV Compose: Surface, Carousel, NavigationDrawer, Cards, focus, D-pad | `references/tv-compose.md` |
 | M3 motion tokens, `MotionTokens`, `MotionScheme`, animation duration, easing | `references/material3-motion.md` |
 | PR URL, code review, "review this PR", "what's wrong with this" | `references/pr-review.md` |
+| Session start, project detection | `references/auto-init.md` |
 
 ### 4. Apply and verify
 - Write code that follows the patterns in the reference
