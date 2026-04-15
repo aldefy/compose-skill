@@ -15,9 +15,12 @@ description: >
   "build this UI", "implement this design", "Android TV", "Google TV", "tv-material",
   "tv-foundation", "Carousel", "NavigationDrawer", "D-pad", "focus indication",
   "10-foot UI", "living room", "tv compose", "review this PR", "review this code",
-  "check this diff", or any GitHub PR URL (github.com/.*/pull/), or asks about modern
+  "check this diff", or any GitHub PR URL (github.com/.*/pull/),
+  "design system", "component library", "atomic", "reusable component",
+  "design tokens", "atoms", "molecules", or asks about modern
   Kotlin UI development patterns. Even casual mentions like "my compose screen is slow"
   or "how do I pass data between screens" or "how do I build a TV app" should trigger this skill.
+  Also trigger on session_start to auto-detect Compose projects — see references/auto-init.md.
 version: 2.1.0
 ---
 
@@ -70,14 +73,14 @@ Read the relevant reference file(s) from `references/` before answering:
 | Topic | Reference File |
 |-------|---------------|
 | `@State`, `remember`, `mutableStateOf`, state hoisting, `derivedStateOf`, `snapshotFlow` | `references/state-management.md` |
-| Structuring composables, slots, extraction, preview | `references/view-composition.md` |
+| Structuring composables, slots, extraction, preview | `references/view-composition.md` — for design system structure, also see `references/atomic-design.md` |
 | Modifier ordering, custom modifiers, `Modifier.Node` | `references/modifiers.md` |
 | `LaunchedEffect`, `DisposableEffect`, `SideEffect`, `rememberCoroutineScope` | `references/side-effects.md` |
 | `CompositionLocal`, `LocalContext`, `LocalDensity`, custom locals | `references/composition-locals.md` |
 | `LazyColumn`, `LazyRow`, `LazyGrid`, `Pager`, keys, content types | `references/lists-scrolling.md` |
 | `NavHost`, type-safe routes, deep links, shared element transitions | `references/navigation.md` |
 | `animate*AsState`, `AnimatedVisibility`, `Crossfade`, transitions | `references/animation.md` — for M3 token selection, also see `references/material3-motion.md` |
-| `MaterialTheme`, `ColorScheme`, dynamic color, `Typography`, shapes | `references/theming-material3.md` — for motion in M3 components, see `references/material3-motion.md` |
+| `MaterialTheme`, `ColorScheme`, dynamic color, `Typography`, shapes | `references/theming-material3.md` — for motion, see `references/material3-motion.md`; for design tokens, see `references/atomic-design.md` |
 | Recomposition skipping, stability, baseline profiles, benchmarking | `references/performance.md` |
 | Semantics, content descriptions, traversal order, testing | `references/accessibility.md` |
 | Removed/replaced APIs, migration paths from older Compose versions | `references/deprecated-patterns.md` |
@@ -89,11 +92,20 @@ Read the relevant reference file(s) from `references/` before answering:
 | TV Compose: Surface, Carousel, NavigationDrawer, Cards, focus, D-pad | `references/tv-compose.md` |
 | M3 motion tokens, `MotionTokens`, `MotionScheme`, animation duration, easing | `references/material3-motion.md` |
 | PR URL, code review, "review this PR", "what's wrong with this" | `references/pr-review.md` |
+| Session start, project detection | `references/auto-init.md` |
+| Atomic design, design system, reusable component, component library, design tokens | `references/atomic-design.md` |
 
 ### 4. Apply and verify
 - Write code that follows the patterns in the reference
 - Flag any anti-patterns you see in the user's existing code
 - Suggest the minimal correct solution — don't over-engineer
+
+### 4a. Component building mode
+When the request involves building a component (composable that renders UI):
+- Consult `references/atomic-design.md`
+- Classify the component level (atom, molecule, organism, template)
+- Apply the "Ask" prompt from Section 5 before scaffolding code
+- Ensure the component satisfies the atom contract (modifier, slots, tokens, defaults)
 
 ### 5. Cite the source
 When referencing Compose internals, point to the exact source file:

@@ -79,7 +79,7 @@ team's own conventions, not deviations from an external style guide.
 
 ### Step 4 — Run the checklist
 
-Evaluate every changed composable against all 5 categories below.
+Evaluate every changed composable against all 6 categories below.
 Use the **full file** from Step 2, not the diff from Step 1.
 
 ### Step 5 — Output the report
@@ -217,6 +217,41 @@ Apply only to files whose path contains `commonMain` or has no platform-specific
 - [ ] **`TvLazyRow` / `TvLazyColumn` / `TvLazyVerticalGrid` / `TvLazyHorizontalGrid` from
   `tv-foundation` flagged as deprecated.** Replace with standard Foundation equivalents.
   See migration table in `references/tv-compose.md` Section 5.
+
+### Category 6: Atomic Design
+
+Cross-reference with `references/atomic-design.md` for token patterns and naming rules.
+
+- [ ] **No hardcoded `Color(0xFF...)` inside composable bodies.** Colors must come from
+  `MaterialTheme.colorScheme.*` or an app-level brand token (`CompositionLocal`).
+  Exception: `Color.Transparent`, `Color.Unspecified`, and `Color.White`/`Color.Black` as
+  explicit design choices are acceptable.
+
+- [ ] **No hardcoded `fontSize`, `fontWeight`, or `TextStyle(...)`.** Typography must come from
+  `MaterialTheme.typography.*`. Flag any inline `TextStyle(fontSize = 14.sp)` or
+  `fontWeight = FontWeight.Bold` outside of a theme definition file.
+
+- [ ] **No magic number spacing (`16.dp`) without token.** If the project defines a spacing
+  scale (check for `CompositionLocal` with spacing values), flag raw `dp` values that should
+  use the scale. If no spacing scale exists, note it as a suggestion — not a critical issue.
+
+- [ ] **Composable names describe function, not context.** Flag composables matching these
+  patterns: `*For*` (e.g., `ButtonForSettings`), `*With*` (e.g., `CardWithRedBorder`),
+  `*In*` (e.g., `HeaderInHome`). Exception: `*WithDefaults` pattern used for providing
+  default parameters is acceptable.
+
+- [ ] **Public composables have `modifier: Modifier = Modifier`.** (Overlaps Category 1 — in
+  atomic context, additionally verify the modifier is passed to the root element and not
+  consumed by an inner element.)
+
+- [ ] **Composables rendering variable content have slot APIs.** Flag composables that hardcode
+  `Text("Submit")`, `Icon(Icons.Default.Close, ...)`, or similar fixed content that should
+  be a slot parameter. Exception: internal/private composables with fixed content by design.
+
+- [ ] **Organisms do not directly reference ViewModel.** Any composable that combines multiple
+  UI components (organism-level) must accept data and callbacks as parameters. Flag direct
+  `viewModel()`, `hiltViewModel()`, or `koinViewModel()` calls inside organisms.
+  The screen-level composable is the correct place for ViewModel access.
 
 ---
 

@@ -41,7 +41,7 @@ AI coding tools generate Compose code that compiles but gets the details wrong. 
 
 This skill fixes that by giving your AI assistant two things:
 
-1. **19 reference guides** covering every major Compose topic — including Compose Multiplatform, Android TV, Material 3 motion, design-to-code workflows, animation recipes, and production crash patterns
+1. **20 reference guides** covering every major Compose topic — including Compose Multiplatform, Android TV, Material 3 motion, atomic design systems, design-to-code workflows, animation recipes, and production crash patterns
 2. **6 source code files** pulled directly from [`androidx/androidx`](https://github.com/androidx/androidx/tree/androidx-main/compose) and [`compose-multiplatform-core`](https://github.com/JetBrains/compose-multiplatform-core) so the agent can check how things actually work
 
 ## What changes when you install it
@@ -81,6 +81,7 @@ This skill fixes that by giving your AI assistant two things:
 | **Platform specifics** | Desktop (Window, Tray, MenuBar), iOS (UIKitView, gotchas), Web/WASM (canvas limitations) |
 | **TV Compose** | TV Material3 (Surface, Cards, Carousel, NavigationDrawer, TabRow), focus system, D-pad navigation, theming, immersive list, TVProvider |
 | **M3 Motion** | All duration tokens (`DurationShort1–4`, `DurationMedium1–4`, `DurationLong1–4`, `DurationExtraLong1–4`), easing tokens with CubicBezierEasing values, `MotionScheme` API (`defaultSpatialSpec`, `defaultEffectsSpec`), Compose API mapping, decision tree, PR review flags |
+| **Atomic design** | 5-level hierarchy (tokens, atoms, molecules, organisms, templates) mapped to Compose, M3 wrapper patterns, custom atom patterns, slot API contracts, token layer, anti-patterns |
 | Source code | Actual `.kt` from `androidx/androidx` and `compose-multiplatform-core` for runtime, UI, foundation, material3, navigation, CMP |
 
 ## How it works
@@ -102,7 +103,7 @@ You ask about Compose
         +-- multiplatform.md
         +-- platform-specifics.md
         +-- tv-compose.md
-        +-- ... (19 guides total)
+        +-- ... (20 guides total)
         |
         +-- source-code/
               +-- runtime-source.md
@@ -111,7 +112,7 @@ You ask about Compose
               +-- ... (6 source files)
 ```
 
-**Layer 1: guidance docs** (18 files) — practical references with patterns, pitfalls, and do/don't examples. This is what the agent reads first.
+**Layer 1: guidance docs** (19 files) — practical references with patterns, pitfalls, and do/don't examples. This is what the agent reads first.
 
 **Layer 2: source code receipts** (6 files) — the actual Kotlin source from `androidx/androidx` and `compose-multiplatform-core`. When the agent needs to verify an implementation detail rather than guess, it reads these.
 
@@ -139,6 +140,7 @@ jetpack-compose-expert-skill/
     ├── multiplatform.md                 # CMP architecture, expect/actual, Res.*, migration
     ├── platform-specifics.md            # Desktop, iOS, Web/WASM platform APIs and gotchas
     ├── tv-compose.md                    # Android TV: tv-material, Carousel, focus, D-pad
+    ├── atomic-design.md                 # Atomic design system: tokens, atoms, molecules, organisms, templates
     └── source-code/                      # Actual .kt source
         ├── runtime-source.md             # Composer, Recomposer, State, Effects
         ├── ui-source.md                  # AndroidCompositionLocals, Modifier, Layout
