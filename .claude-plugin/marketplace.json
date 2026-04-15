@@ -1,0 +1,15 @@
+{
+  "name": "aldefy-compose-skill",
+  "description": "Compose and Compose Multiplatform skills maintained by Adit Lal.",
+  "owner": {
+    "name": "Adit Lal",
+    "url": "https://github.com/aldefy"
+  },
+  "plugins": [
+    {
+      "name": "compose-expert",
+      "source": "./",
+      "description": "Compose expert skill — state, animations, navigation, performance, PR review, M3 motion."
+    }
+  ]
+}
