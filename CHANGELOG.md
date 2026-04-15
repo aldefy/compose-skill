@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.1] - 2026-04-15
+
+### Fixed
+
+- **Plugin manifest schema**: `.claude-plugin/plugin.json` was rejected by Claude
+  Code's validator. `repository` is now a string URL (was an object), and the
+  incorrect `skills` field has been removed — Claude Code auto-discovers skills
+  from the top-level `skills/` directory.
+- Skill directory moved from `jetpack-compose-expert-skill/` to
+  `skills/compose-expert/` to match Claude Code's plugin auto-discovery
+  convention.
+
+### Migration notes
+
+- **Fresh installs via `/plugin install compose-expert` now work.**
+- **Codex CLI manual-install users** need to update their symlink target:
+  `~/.codex/skills-src/compose-skill/skills/compose-expert` instead of the old
+  `jetpack-compose-expert-skill` path.
+
 ## [2.1.0] - 2026-04-15
 
 ### Changed (distribution)

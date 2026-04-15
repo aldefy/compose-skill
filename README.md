@@ -119,7 +119,7 @@ You ask about Compose
 ## File structure
 
 ```
-jetpack-compose-expert-skill/
+skills/compose-expert/
 ├── SKILL.md                              # Main workflow + checklists
 └── references/
     ├── state-management.md               # State, remember, hoisting, derivedStateOf
@@ -166,7 +166,7 @@ Skills are file-based — Claude Code discovers them automatically from `~/.clau
 ```bash
 git clone https://github.com/aldefy/compose-skill.git /tmp/compose-skill
 mkdir -p ~/.claude/skills
-cp -r /tmp/compose-skill/jetpack-compose-expert-skill ~/.claude/skills/
+cp -r /tmp/compose-skill/skills/compose-expert ~/.claude/skills/
 ```
 
 **Project-specific skill (just one project):**
@@ -176,7 +176,7 @@ cp -r /tmp/compose-skill/jetpack-compose-expert-skill ~/.claude/skills/
 ```bash
 git clone https://github.com/aldefy/compose-skill.git /tmp/compose-skill
 mkdir -p .claude/skills
-cp -r /tmp/compose-skill/jetpack-compose-expert-skill .claude/skills/
+cp -r /tmp/compose-skill/skills/compose-expert .claude/skills/
 ```
 
 No CLI command or config file needed. Claude Code picks up `SKILL.md` from these directories automatically and triggers when you mention Compose, `@Composable`, `remember`, `LazyColumn`, `NavHost`, etc.
@@ -192,8 +192,8 @@ Add an `AGENTS.md` file to your project root:
 
 ## Jetpack Compose
 For all Compose/Android UI tasks, follow the instructions in
-`jetpack-compose-expert-skill/SKILL.md` and consult the reference
-files in `jetpack-compose-expert-skill/references/` before answering.
+`skills/compose-expert/SKILL.md` and consult the reference
+files in `skills/compose-expert/references/` before answering.
 ```
 
 Add the skill to your project as a submodule:
@@ -215,16 +215,16 @@ Add to `GEMINI.md` in your project root:
 
 ## Jetpack Compose Expert
 For all Jetpack Compose tasks, follow the workflow and checklists in
-`jetpack-compose-expert-skill/SKILL.md`.
+`skills/compose-expert/SKILL.md`.
 
 Before answering any Compose question, consult the relevant reference:
-- State management -> `jetpack-compose-expert-skill/references/state-management.md`
-- Performance -> `jetpack-compose-expert-skill/references/performance.md`
-- Navigation -> `jetpack-compose-expert-skill/references/navigation.md`
+- State management -> `skills/compose-expert/references/state-management.md`
+- Performance -> `skills/compose-expert/references/performance.md`
+- Navigation -> `skills/compose-expert/references/navigation.md`
 - (see SKILL.md for the full topic -> file mapping)
 
 For implementation details, check actual source code in
-`jetpack-compose-expert-skill/references/source-code/`.
+`skills/compose-expert/references/source-code/`.
 ```
 
 Add as a submodule:
@@ -237,7 +237,7 @@ git submodule add git@github.com:aldefy/compose-skill.git .compose-skill
 
 ### Google Antigravity
 
-Antigravity automatically discovers skills from workspace or global skill folders. The `jetpack-compose-expert-skill` directory acts as a complete, ready-to-use Antigravity skill since it contains the needed `SKILL.md` file with a YAML frontmatter description.
+Antigravity automatically discovers skills from workspace or global skill folders. The `skills/compose-expert` directory acts as a complete, ready-to-use Antigravity skill since it contains the needed `SKILL.md` file with a YAML frontmatter description.
 
 **Workspace skill (project-specific):**
 
@@ -247,7 +247,7 @@ git clone https://github.com/aldefy/compose-skill.git /tmp/compose-skill
 
 # Copy into your project's .agents/skills directory
 mkdir -p .agents/skills
-cp -r /tmp/compose-skill/jetpack-compose-expert-skill .agents/skills/compose-expert
+cp -r /tmp/compose-skill/skills/compose-expert .agents/skills/compose-expert
 ```
 
 **Global skill (available in all your projects):**
@@ -258,7 +258,7 @@ git clone https://github.com/aldefy/compose-skill.git /tmp/compose-skill
 
 # Copy into your global Antigravity skills directory
 mkdir -p ~/.gemini/antigravity/skills
-cp -r /tmp/compose-skill/jetpack-compose-expert-skill ~/.gemini/antigravity/skills/compose-expert
+cp -r /tmp/compose-skill/skills/compose-expert ~/.gemini/antigravity/skills/compose-expert
 ```
 
 ---
@@ -273,9 +273,9 @@ description: Jetpack Compose expert guidance
 globs: **/*.kt
 ---
 
-Follow the instructions in `jetpack-compose-expert-skill/SKILL.md`
+Follow the instructions in `skills/compose-expert/SKILL.md`
 for all Compose-related code. Consult reference files in
-`jetpack-compose-expert-skill/references/` before suggesting patterns.
+`skills/compose-expert/references/` before suggesting patterns.
 ```
 
 Or paste the contents of `SKILL.md` into **Settings > Rules for AI**.
@@ -289,8 +289,8 @@ Add to `.github/copilot-instructions.md`:
 ```markdown
 ## Jetpack Compose
 For Compose/Android UI work, follow the skill instructions in
-`jetpack-compose-expert-skill/SKILL.md`. Consult reference files in
-`jetpack-compose-expert-skill/references/` for patterns, pitfalls,
+`skills/compose-expert/SKILL.md`. Consult reference files in
+`skills/compose-expert/references/` for patterns, pitfalls,
 and source-code-backed guidance.
 ```
 
@@ -302,8 +302,8 @@ Create `.windsurf/rules/compose-skill.md` in your project root:
 
 ```markdown
 For all Jetpack Compose tasks, follow the workflow in
-`jetpack-compose-expert-skill/SKILL.md` and consult the reference
-files in `jetpack-compose-expert-skill/references/` before answering.
+`skills/compose-expert/SKILL.md` and consult the reference
+files in `skills/compose-expert/references/` before answering.
 ```
 
 > **Note:** The legacy `.windsurfrules` file also works but `.windsurf/rules/` is the current approach.
@@ -316,15 +316,15 @@ Add to `.amazonq/rules/compose.md`:
 
 ```markdown
 For all Jetpack Compose tasks, follow the workflow in
-`jetpack-compose-expert-skill/SKILL.md` and consult the reference
-files in `jetpack-compose-expert-skill/references/` before answering.
+`skills/compose-expert/SKILL.md` and consult the reference
+files in `skills/compose-expert/references/` before answering.
 ```
 
 ---
 
 ### Any other AI coding tool
 
-It's just markdown. Clone this repo into your project (or add as a submodule), then point your tool's instruction file at `jetpack-compose-expert-skill/SKILL.md`. The agent reads `SKILL.md` for the workflow and pulls from `references/` as needed.
+It's just markdown. Clone this repo into your project (or add as a submodule), then point your tool's instruction file at `skills/compose-expert/SKILL.md`. The agent reads `SKILL.md` for the workflow and pulls from `references/` as needed.
 
 ## Quick example
 
