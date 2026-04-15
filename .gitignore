@@ -1,0 +1,12 @@
+# Superpowers specs and plans (local workflow artifacts)
+docs/superpowers/
+
+# Git worktrees (if created inside the repo)
+.worktrees/
+worktrees/
+
+# Claude local settings (never committed)
+**/.claude/settings.local.json
+
+# macOS
+.DS_Store
