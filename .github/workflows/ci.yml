@@ -1,0 +1,29 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install jq + bats
+        run: sudo apt-get update && sudo apt-get install -y jq bats
+
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Validate plugin manifest schema
+        run: bash scripts/validate-plugin-manifest.sh
+
+      - name: Run manifest schema tests
+        run: bats scripts/validate-plugin-manifest.bats
+
+      - name: Run version-consistency tests
+        run: bats scripts/check-versions.bats

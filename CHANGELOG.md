@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.2] - 2026-04-15
+
+### Added
+
+- **Pre-release manifest schema validator** (`scripts/validate-plugin-manifest.sh`
+  plus BATS tests) that catches the two bugs that slipped through v2.1.0 and
+  v2.1.1: non-string `repository` field, and illegal `skills` field. Also
+  asserts that `skills/<name>/SKILL.md` exists with the required frontmatter.
+- **CI workflow** (`.github/workflows/ci.yml`) that runs the validator and all
+  BATS suites on every PR + push to master. No more shipping broken manifests.
+- Release workflow now runs the manifest validator before the version-
+  consistency check.
+
+### Install troubleshooting
+
+If `/plugin install` fails with "invalid manifest" after you've already
+attempted an install with a broken version (2.1.0 or 2.1.1-pre-rename), Claude
+Code's local cache may still hold the bad copy. Clear it:
+
+```
+/plugin marketplace remove aldefy/compose-skill
+rm -rf ~/.claude/plugins/cache/temp_local_*
+/plugin marketplace add aldefy/compose-skill
+/plugin install compose-expert
+```
+
 ## [2.1.1] - 2026-04-15
 
 ### Fixed

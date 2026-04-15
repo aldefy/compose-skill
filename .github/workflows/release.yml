@@ -19,6 +19,9 @@ jobs:
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
           sudo chmod +x /usr/local/bin/yq
 
+      - name: Validate plugin manifest schema
+        run: bash scripts/validate-plugin-manifest.sh
+
       - name: Assert version consistency
         run: bash scripts/check-versions.sh "${GITHUB_REF_NAME}"
 

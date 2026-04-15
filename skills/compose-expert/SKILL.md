@@ -21,7 +21,7 @@ description: >
   Kotlin UI development patterns. Even casual mentions like "my compose screen is slow"
   or "how do I pass data between screens" or "how do I build a TV app" should trigger this skill.
   Also trigger on session_start to auto-detect Compose projects — see references/auto-init.md.
-version: 2.1.1
+version: 2.1.2
 ---
 
 > **Installation notice:** This skill is now distributed as a plugin.
