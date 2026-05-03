@@ -41,7 +41,7 @@ AI coding tools generate Compose code that compiles but gets the details wrong. 
 
 This skill fixes that by giving your AI assistant two things:
 
-1. **20 reference guides** covering every major Compose topic — including Compose Multiplatform, Android TV, Material 3 motion, atomic design systems, design-to-code workflows, animation recipes, and production crash patterns
+1. **24 reference guides** covering every major Compose topic — including Compose Multiplatform, Android TV, Material 3 motion, atomic design systems, design-to-code workflows, animation recipes, Paging 3 (core / offline-first / MVI + testing), Nav 2 → Nav 3 migration, and production crash patterns
 2. **6 source code files** pulled directly from [`androidx/androidx`](https://github.com/androidx/androidx/tree/androidx-main/compose) and [`compose-multiplatform-core`](https://github.com/JetBrains/compose-multiplatform-core) so the agent can check how things actually work
 
 ## What changes when you install it
@@ -82,6 +82,8 @@ This skill fixes that by giving your AI assistant two things:
 | **TV Compose** | TV Material3 (Surface, Cards, Carousel, NavigationDrawer, TabRow), focus system, D-pad navigation, theming, immersive list, TVProvider |
 | **M3 Motion** | All duration tokens (`DurationShort1–4`, `DurationMedium1–4`, `DurationLong1–4`, `DurationExtraLong1–4`), easing tokens with CubicBezierEasing values, `MotionScheme` API (`defaultSpatialSpec`, `defaultEffectsSpec`), Compose API mapping, decision tree, PR review flags |
 | **Atomic design** | 5-level hierarchy (tokens, atoms, molecules, organisms, templates) mapped to Compose, M3 wrapper patterns, custom atom patterns, slot API contracts, token layer, anti-patterns |
+| **Paging 3** | `PagingSource`, `Pager`, `PagingConfig`, `LazyPagingItems`, `LoadState` UI handling, `flatMapLatest` for filter changes, `RemoteMediator` offline-first, MVI dual-flow pattern, `asSnapshot`/`TestPager`, full anti-pattern table |
+| **Nav 2 → Nav 3 migration** | Conceptual shifts (you own the back stack), mechanical migration steps (`NavKey`, `rememberNavBackStack`, `NavDisplay`, entry-scoped ViewModels, deep-link parsing), original "Choosing Nav 2 vs Nav 3" decision guide with the CMP 1.10+ polymorphic-serialisation caveat |
 | Source code | Actual `.kt` from `androidx/androidx` and `compose-multiplatform-core` for runtime, UI, foundation, material3, navigation, CMP |
 
 ## How it works
@@ -112,7 +114,7 @@ You ask about Compose
               +-- ... (6 source files)
 ```
 
-**Layer 1: guidance docs** (19 files) — practical references with patterns, pitfalls, and do/don't examples. This is what the agent reads first.
+**Layer 1: guidance docs** (24 files) — practical references with patterns, pitfalls, and do/don't examples. The skill's `## Quick Routing` section maps task signals to a single file so the agent lands on the right reference in one read.
 
 **Layer 2: source code receipts** (6 files) — the actual Kotlin source from `androidx/androidx` and `compose-multiplatform-core`. When the agent needs to verify an implementation detail rather than guess, it reads these.
 
@@ -128,7 +130,11 @@ skills/compose-expert/
     ├── side-effects.md                   # LaunchedEffect, DisposableEffect, SideEffect
     ├── composition-locals.md             # CompositionLocal, LocalContext, custom locals
     ├── lists-scrolling.md                # LazyColumn/Row/Grid, Pager, keys, contentType
-    ├── navigation.md                     # NavHost, type-safe routes, deep links
+    ├── navigation.md                     # NavHost, type-safe routes, deep links (Nav 2)
+    ├── navigation-migration.md           # Nav 2 → Nav 3 migration + decision guide
+    ├── paging.md                         # Paging 3 core: PagingSource, Pager, LazyPagingItems
+    ├── paging-offline.md                 # RemoteMediator, offline-first, LoadState gotchas
+    ├── paging-mvi-testing.md             # MVI dual-flow pattern, asSnapshot, TestPager
     ├── animation.md                      # animate*AsState, AnimatedVisibility, transitions
     ├── theming-material3.md              # MaterialTheme, ColorScheme, dynamic color
     ├── performance.md                    # Recomposition, stability, benchmarking
