@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.3.1] - 2026-05-03
+
+### Fixed
+
+- **`SKILL.md` `description:` frontmatter no longer exceeds Codex / Copilot
+  CLI's 1024-character cap** (issue #12). Both hosts rejected the manifest
+  with `invalid description: exceeds maximum length of 1024 characters`. The
+  field is now 843 chars; Claude Code continues to load it identically.
+
+### Changed
+
+- Long trigger-keyword surface previously packed into the `description:`
+  field (TV phrases, casual phrasings, Compose Multiplatform symbol lists,
+  Review Mode triggers) is preserved in a new **`## When this skill applies`**
+  section in the SKILL.md body. Body content is not subject to the 1024-char
+  cap, so the keyword surface remains available to Claude after the skill
+  loads.
+
+### Added
+
+- **`scripts/check-description-length.sh`** — a regression check that
+  asserts the SKILL.md frontmatter `description:` is ≤ 1024 chars.
+- Wired the new check into both `.github/workflows/ci.yml` (every PR) and
+  `.github/workflows/release.yml` (every tag push) so a future regression
+  fails CI loudly instead of shipping green on Claude Code and breaking
+  Codex / Copilot installs.
+
 ## [2.3.0] - 2026-05-03
 
 ### Added

@@ -1,27 +1,18 @@
 ---
 name: compose-expert
 description: >
-  Compose and Compose Multiplatform expert skill for UI development across Android, Desktop,
-  iOS, and Web. Guides state management, view composition, animations, navigation, performance,
-  design-to-code workflows, and production crash patterns. Backed by actual source code analysis
-  from both androidx/androidx and JetBrains/compose-multiplatform-core.
-  Use this skill whenever the user mentions Compose, @Composable, remember, LaunchedEffect,
-  Scaffold, NavHost, MaterialTheme, LazyColumn, Modifier, recomposition, Style, styleable,
-  MutableStyleState, Compose Multiplatform, CMP, KMP, commonMain, expect, actual,
-  ComposeUIViewController, Window composable, UIKitView, ComposeViewport, Res.drawable,
-  Res.string, or any Compose API. Also trigger when the user says "Android UI", "Kotlin UI",
-  "compose layout", "compose navigation", "compose animation", "material3", "compose styles",
-  "compose multiplatform", "desktop compose", "iOS compose", "compose web", "design to compose",
-  "build this UI", "implement this design", "Android TV", "Google TV", "tv-material",
-  "tv-foundation", "Carousel", "NavigationDrawer", "D-pad", "focus indication",
-  "10-foot UI", "living room", "tv compose", "review this PR", "review this code",
-  "check this diff", or any GitHub PR URL (github.com/.*/pull/),
-  "design system", "component library", "atomic", "reusable component",
-  "design tokens", "atoms", "molecules", or asks about modern
-  Kotlin UI development patterns. Even casual mentions like "my compose screen is slow"
-  or "how do I pass data between screens" or "how do I build a TV app" should trigger this skill.
-  Also trigger on session_start to auto-detect Compose projects — see references/auto-init.md.
-version: 2.3.0
+  Compose and Compose Multiplatform expert for UI development across Android, Desktop,
+  iOS, and Web. Use whenever the user mentions Compose APIs (@Composable, remember,
+  LaunchedEffect, NavHost, MaterialTheme, LazyColumn, Modifier, recomposition),
+  Compose Multiplatform (commonMain, expect/actual, Res.*, ComposeUIViewController,
+  UIKitView, ComposeViewport), Android TV (tv-material, D-pad, focus, Carousel),
+  Material 3 motion, atomic design systems, design-to-code workflows, Paging 3, or
+  navigation. Activates Review Mode on GitHub PR URLs and review phrases ("review
+  this PR", "what's wrong with this"). Auto-detects Compose projects on
+  session_start. Backed by actual androidx/androidx and JetBrains/compose-multiplatform-core
+  source receipts. See "## When this skill applies" in SKILL.md for the full trigger
+  surface.
+version: 2.3.1
 ---
 
 > **Installation notice:** This skill is now distributed as a plugin.
@@ -33,6 +24,57 @@ version: 2.3.0
 >
 > See [MIGRATION.md](../docs/MIGRATION.md) for Codex and Copilot CLI instructions.
 > This banner will remain through v2.x and escalate in v3.0.
+
+## When this skill applies
+
+The frontmatter `description:` is intentionally short to satisfy Codex / Copilot
+CLI's 1024-character cap on that field (see issue #12). The full trigger surface
+lives here so it stays available to Claude after the skill loads.
+
+### Compose API mentions
+`@Composable`, `remember`, `mutableStateOf`, `derivedStateOf`, `rememberSaveable`,
+`LaunchedEffect`, `DisposableEffect`, `SideEffect`, `rememberCoroutineScope`,
+`Scaffold`, `NavHost`, `NavController`, `MaterialTheme`, `ColorScheme`,
+`Typography`, `LazyColumn`, `LazyRow`, `LazyVerticalGrid`, `HorizontalPager`,
+`Modifier`, `Modifier.Node`, `recomposition`, `CompositionLocal`, `Style`,
+`styleable`, `MutableStyleState`.
+
+### Compose Multiplatform / KMP
+`Compose Multiplatform`, `CMP`, `KMP`, `commonMain`, `expect`, `actual`,
+`ComposeUIViewController`, `Window` composable, `UIKitView`, `ComposeViewport`,
+`Res.drawable`, `Res.string`, `SkikoMain`.
+
+### Android TV
+`tv-material`, `tv-foundation`, `Carousel`, `NavigationDrawer` (TV),
+`D-pad`, `focus indication`, `FocusRequester` on TV, `10-foot UI`,
+`living room`, `tv compose`, `Android TV`, `Google TV`, `leanback migration`.
+
+### Paging 3
+`PagingSource`, `Pager`, `PagingConfig`, `PagingData`, `LazyPagingItems`,
+`collectAsLazyPagingItems`, `RemoteMediator`, `LoadState`,
+`asSnapshot`, `TestPager`, `cachedIn`.
+
+### Design system / design-to-code
+`atomic design`, `atoms`, `molecules`, `organisms`, `templates`,
+`design tokens`, `design system`, `component library`, `reusable component`,
+`Figma to Compose`, `design to compose`, `build this UI`, `implement this design`,
+`spec to code`, `redline`.
+
+### Casual phrasing
+"my compose screen is slow", "my recomposition is broken",
+"how do I pass data between screens", "how do I build a TV app",
+"Android UI", "Kotlin UI", "compose layout", "compose navigation",
+"compose animation", "compose styles", "desktop compose", "iOS compose",
+"compose web".
+
+### Review Mode triggers
+Any GitHub PR URL matching `github.com/.*/pull/\d+`, or phrases:
+"review this PR", "review this diff", "review this code",
+"check this code", "check this diff", "what's wrong with this".
+On match, follow `references/pr-review.md` exclusively.
+
+### Session start
+Auto-detect Compose projects on `session_start` — see `references/auto-init.md`.
 
 ## Quick Routing
 

@@ -22,6 +22,9 @@ jobs:
       - name: Validate plugin manifest schema
         run: bash scripts/validate-plugin-manifest.sh
 
+      - name: Check SKILL.md description length (Codex/Copilot 1024-char cap)
+        run: bash scripts/check-description-length.sh
+
       - name: Run manifest schema tests
         run: bats scripts/validate-plugin-manifest.bats
 
