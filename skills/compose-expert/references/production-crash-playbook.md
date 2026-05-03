@@ -52,6 +52,29 @@ fun ShimmerList() {
 
 **Rule:** Any value derived from `LocalConfiguration`, `LocalDensity`, or `LocalLayoutDirection` MUST include that configuration source in `remember`'s key parameters. Audit all `remember {}` calls that reference `screenHeightDp`, `screenWidthDp`, `fontScale`, or `densityDpi`.
 
+**CMP equivalent:** `LocalConfiguration` is Android-only. In `commonMain`, derive
+screen dimensions from `LocalWindowInfo.current.containerSize` and
+`LocalDensity.current` instead. Same rule applies — keys must include the
+size/density source so `remember` recomputes when the window resizes
+(desktop window drag, foldable posture change, iPad multitasking).
+
+```kotlin
+// commonMain — CMP-safe shimmer count
+@Composable
+fun ShimmerListMultiplatform() {
+    val containerSize = LocalWindowInfo.current.containerSize
+    val density = LocalDensity.current
+    val screenHeightDp = with(density) { containerSize.height.toDp() }
+    val itemHeightDp = 80.dp
+
+    val shimmerCount = remember(screenHeightDp) {
+        (screenHeightDp / itemHeightDp).toInt().coerceAtLeast(1)
+    }
+
+    LazyColumn { items(shimmerCount) { ShimmerItem() } }
+}
+```
+
 ---
 
 ## 2. indexOf() Inside items {}
@@ -562,6 +585,14 @@ fun ChatScreen(viewModel: ChatViewModel) {
 ```
 
 `rememberSaveable` serializes to the `Bundle`, which has a ~1MB limit on Android. Using it inside list items for per-item state quickly exceeds this limit and causes `TransactionTooLargeException`.
+
+**CMP equivalent:** `rememberSaveable` works in `commonMain` too, backed by
+`SaveableStateRegistry` rather than `Bundle`. The hard ~1MB limit is Android's
+binder transaction limit and does not apply identically on iOS/Desktop/Web —
+but the *principle* (don't shove per-item state into the saveable registry)
+holds everywhere. Per-item saved state still bloats process restoration on
+desktop, suspend/resume on iOS, and `sessionStorage` on web. Keep the rule:
+`rememberSaveable` at the screen level, plain `remember` inside list items.
 
 ### Rule 4: snapshotFlow + distinctUntilChanged for Reactive Scroll
 

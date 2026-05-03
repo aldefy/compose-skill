@@ -2,6 +2,57 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.3.0] - 2026-05-03
+
+### Added
+
+- **Quick Routing section in `SKILL.md`**. A signal-to-file table at the top of
+  the skill so Claude lands on the right reference in one read instead of
+  scanning the full topic table. Every reference file is reachable from at
+  least one routing entry.
+- **Paging 3 references** (3 new files):
+  - `references/paging.md` — core setup (`PagingSource`, `Pager`,
+    `PagingConfig`, `LazyPagingItems`, `LoadState`, transformations,
+    `flatMapLatest` for filter/query reactivity).
+  - `references/paging-offline.md` — offline-first with `RemoteMediator`,
+    `loadState.source.refresh` vs `loadState.refresh` gotcha. Includes a
+    Compose Multiplatform note pointing at SQLDelight as the `commonMain`
+    equivalent of Room.
+  - `references/paging-mvi-testing.md` — dual-flow MVI pattern (PagingData
+    as its own Flow, never inside UiState), `asSnapshot` and `TestPager`
+    test recipes, the full anti-pattern table.
+- **`references/navigation-migration.md`** — Nav 2 → Nav 3 conceptual shifts,
+  mechanical migration steps (`NavKey`, `rememberNavBackStack`, `NavDisplay`,
+  entry-scoped ViewModels, deep-link parsing), plus an original
+  "Choosing Nav 2 vs Nav 3" decision guide grounded in JetBrains'
+  Compose Multiplatform 1.10+ Nav 3 support and the polymorphic-serialisation
+  caveat for iOS/web targets.
+
+### Changed
+
+- **Compose Multiplatform equivalents added to Android-leaning examples**:
+  - `production-crash-playbook.md` Section 1: `LocalConfiguration` is
+    Android-only — added a `commonMain` snippet using
+    `LocalWindowInfo.containerSize` plus `LocalDensity`.
+  - `production-crash-playbook.md` Rule 3: `rememberSaveable` works in
+    `commonMain` via `SaveableStateRegistry`; the ~1 MB `Bundle` limit is
+    Android's binder limit, not a CMP property — the per-item-state rule
+    still holds across desktop/iOS/web.
+  - `paging-offline.md`: top-of-file note clarifying Room is Android-only;
+    SQLDelight (`app.cash.sqldelight:androidx-paging3-extensions`) is the
+    `commonMain` equivalent. The `LoadState` rule applies identically because
+    it's a Paging 3 contract, not a Room property.
+  - `navigation.md`: top-of-file callout pointing CMP readers at
+    `navigation-migration.md` and Nav 3.
+
+### Source citations
+
+- All `<!-- source: -->` comments in new files were verified against the
+  bundled `references/source-code/*.md` receipts. Where a Paging API
+  (`LazyPagingItems`, `PagingSource`, `RemoteMediator`, `TestPager`) is **not**
+  bundled — it lives in `androidx.paging:*`, a separate library — the file
+  notes this explicitly rather than fabricating a citation.
+
 ## [2.1.2] - 2026-04-15
 
 ### Added

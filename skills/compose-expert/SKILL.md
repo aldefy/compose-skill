@@ -21,7 +21,7 @@ description: >
   Kotlin UI development patterns. Even casual mentions like "my compose screen is slow"
   or "how do I pass data between screens" or "how do I build a TV app" should trigger this skill.
   Also trigger on session_start to auto-detect Compose projects — see references/auto-init.md.
-version: 2.1.2
+version: 2.3.0
 ---
 
 > **Installation notice:** This skill is now distributed as a plugin.
@@ -33,6 +33,81 @@ version: 2.1.2
 >
 > See [MIGRATION.md](../docs/MIGRATION.md) for Codex and Copilot CLI instructions.
 > This banner will remain through v2.x and escalate in v3.0.
+
+## Quick Routing
+
+Use this table first. Match the user's signal to one reference file and read it before
+answering. `source-code/` files are supporting evidence — load a `references/*.md` file
+first, then cite `source-code/` for implementation proof when receipts matter.
+
+### State, recomposition, side effects
+
+- **`remember`, `rememberSaveable`, `mutableStateOf` vs `mutableIntStateOf`, state hoisting** → `references/state-management.md`
+- **`derivedStateOf`, `snapshotFlow`, StateFlow in UI, recomposition scope boundaries** → `references/state-management.md` (secondary: `references/performance.md`)
+- **`LaunchedEffect`, `SideEffect`, `DisposableEffect`, `rememberUpdatedState`, `rememberCoroutineScope`** → `references/side-effects.md`
+- **Recomposition frequency, "my screen recomposes too often", stability, `@Stable`/`@Immutable`, Compose compiler metrics, baseline profiles, strong skipping** → `references/performance.md`
+- **`CompositionLocal`, ambient values, theming propagation, `LocalContext` misuse, custom locals** → `references/composition-locals.md`
+
+### Animation and motion
+
+- **`animate*AsState`, `AnimatedVisibility`, `Crossfade`, `updateTransition`, `Animatable`, `rememberInfiniteTransition`** → `references/animation.md`
+- **Shared element transitions, gesture-driven animation, `Modifier.graphicsLayer`, Canvas drawing, custom motion spec** → `references/animation.md` (secondary: `references/modifiers.md` for `graphicsLayer`)
+- **M3 motion tokens, `MotionTokens`, `MotionScheme`, animation duration tokens, M3 easing curves** → `references/material3-motion.md`
+
+### Layout, lists, modifiers
+
+- **`LazyColumn`, `LazyRow`, `LazyVerticalGrid`, `LazyHorizontalGrid`, `key`/`itemKey`, `contentType`, `LazyListState`, scroll state, sticky headers** → `references/lists-scrolling.md`
+- **`HorizontalPager`, `VerticalPager`, `PagerState`** → `references/lists-scrolling.md`
+- **Modifier chain ordering, custom layout, `Layout`, `SubcomposeLayout`, layout modifier, draw modifier, `Painter`, `Modifier.Node`** → `references/modifiers.md`
+
+### Navigation
+
+- **`NavHost`, `NavController`, back stack, deep links, type-safe `@Serializable` routes, navigation graph, nested graphs** → `references/navigation.md`
+- **Migrating from Nav 2 to Nav 3, `NavDisplay`, `NavKey`, `rememberNavBackStack`, `NavBackStackEntry` changes** → `references/navigation-migration.md`
+- **Choosing between Nav 2 and Nav 3, type-safe navigation decision, KMP navigation** → `references/navigation-migration.md` (secondary: `references/navigation.md`)
+
+### Paging
+
+- **`PagingSource`, `PagingData`, `Pager` setup, `PagingConfig`, `pagingDataFlow`, invalidation** → `references/paging.md`
+- **`LazyPagingItems`, `collectAsLazyPagingItems`, `itemKey`, `itemContentType`, `LoadState` in UI, retry/refresh** → `references/paging.md`
+- **`RemoteMediator`, offline-first paging, network + cache paging, `loadState.source.refresh`** → `references/paging-offline.md`
+- **Paging with MVI, dual-flow pattern, paging tests (`asSnapshot`, `TestPager`), `CombinedLoadStates`, paging anti-patterns** → `references/paging-mvi-testing.md`
+
+### Theming and design systems
+
+- **`MaterialTheme`, `ColorScheme`, `Typography`, `Shapes`, dynamic color, M3 tokens, color roles** → `references/theming-material3.md`
+- **Atom, molecule, organism, template, component hierarchy, design system structure, reusable components, design tokens** → `references/atomic-design.md`
+- **Figma → Compose, screenshot → composable, design token translation, spec-to-code, redline interpretation** → `references/design-to-compose.md`
+- **`Style {}`, `MutableStyleState`, `Modifier.styleable()` (experimental Foundation Styles API)** → `references/styles-experimental.md`
+
+### Multiplatform and platform-specific
+
+- **iOS/Desktop/Web CMP targets, `expect`/`actual`, `commonMain`, `Res.drawable`, `Res.string`, platform-specific composables** → `references/multiplatform.md`
+- **`ComposeUIViewController` (iOS), `Window`/`Tray`/`MenuBar` (Desktop), `UIKitView`, `ComposeViewport` (Web), platform interop** → `references/platform-specifics.md`
+- **TV Compose, `androidx.tv`, D-pad focus, `FocusRequester` on TV, `Carousel`, `NavigationDrawer` (TV), 10-foot UI, leanback migration** → `references/tv-compose.md`
+
+### Interop and accessibility
+
+- **Compose inside XML, `AndroidView`, `ComposeView`, `AbstractComposeView`, hybrid migration, View → Compose interop** → `references/view-composition.md`
+- **Accessibility, `Modifier.semantics`, TalkBack, touch target size, `contentDescription`, WCAG, traversal order** → `references/accessibility.md`
+
+### Production, review, migration
+
+- **Production crash, ANR, Compose stack trace, `remember` leak, zero-size DrawScope, duplicate keys, stale `derivedStateOf`** → `references/production-crash-playbook.md`
+- **PR review, code review, "review this diff", composable anti-patterns, smell detection, GitHub PR URL** → `references/pr-review.md`
+- **Deprecated Compose API, "removed in version X", migration from old API, replaced symbols** → `references/deprecated-patterns.md`
+- **Experimental opt-in, `@OptIn`, `@ExperimentalFoundationStyleApi`, unstable API usage** → `references/styles-experimental.md` (for Styles); for general guidance, the relevant topic file
+- **Session start, project detection, auto-init** → `references/auto-init.md`
+
+### Source-code receipts (cite, don't route to)
+
+- **"Show me the actual implementation", "where in androidx is this", internal Compose mechanics** → load the topic reference first, then cite the matching `references/source-code/*.md` file:
+  - Runtime/state internals (Composer, Snapshot, Effects, Remember) → `references/source-code/runtime-source.md`
+  - UI/layout/measurement/draw internals → `references/source-code/ui-source.md`
+  - Foundation (LazyList, Pager, Clickable, Scrollable, BasicTextField) → `references/source-code/foundation-source.md`
+  - Material3 components → `references/source-code/material3-source.md`
+  - Navigation Compose internals → `references/source-code/navigation-source.md`
+  - CMP entry points (Window, ComposeUIViewController, UIKitView, ComposeViewport) → `references/source-code/cmp-source.md`
 
 # Compose Expert Skill
 

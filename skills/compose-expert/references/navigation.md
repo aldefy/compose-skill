@@ -2,6 +2,14 @@
 
 Reference: `androidx/navigation/navigation-compose/src/commonMain/kotlin/androidx/navigation/compose/`
 
+> **Compose Multiplatform readers:** Navigation 2 (the `NavHost` / `NavController`
+> API documented below) targets Android. Compose Multiplatform support for Nav 2
+> in `commonMain` is partial and historically lagged Android. For new
+> multiplatform projects (Android + iOS + Desktop + Web), prefer Navigation 3 —
+> see `navigation-migration.md` for the API differences and a decision guide.
+> The Nav 2 patterns in this file remain accurate for Android-only apps and for
+> understanding the migration target.
+
 ## Setup
 
 ### Basic NavHost and NavController
