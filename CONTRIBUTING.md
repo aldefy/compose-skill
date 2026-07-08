@@ -53,9 +53,9 @@ Run before tagging a release:
 
 ## Verifiable layout claims
 
-Reference docs can assert Compose layout behavior that CI executes. Mark a
-fenced block `kotlin verify`, give it a unique `// name:`, declare
-`// assert: width = N.dp` / `// assert: height = N.dp`, and define
+Reference docs can assert Compose layout behavior that CI executes. For measured
+layout claims, mark a fenced block `kotlin verify`, give it a unique `// name:`,
+declare `// assert: width = N.dp` / `// assert: height = N.dp`, and define
 `@Composable fun Subject()`:
 
     ```kotlin verify
@@ -64,10 +64,22 @@ fenced block `kotlin verify`, give it a unique `// name:`, declare
     @Composable fun Subject() { Box(Modifier.size(100.dp)) }
     ```
 
+For snippets that should compile but do not need a measured assertion, use
+`kotlin compile` with the same `// name:` and `@Composable fun Subject()`
+contract:
+
+    ```kotlin compile
+    // name: material-theme-provides-tokens
+    @Composable fun Subject() {
+        MaterialTheme { Text("Hello") }
+    }
+    ```
+
 `./gradlew :verify-claims:testDebugUnitTest` generates one Robolectric test per
-block (via the `generateClaimTests` task, which harvests the blocks from
-`skills/compose-expert/references/`) and asserts the measured size on a headless
-JVM — no emulator. A wrong number fails CI. Plain ` ```kotlin ` blocks are
-illustrative and are not executed.
+`kotlin verify` block and compile-only subjects for each `kotlin compile` block
+(via the `generateClaimTests` task, which harvests top-level files from
+`skills/compose-expert/references/`) on a headless JVM — no emulator. A wrong
+number fails CI; a missing or stale API in an opt-in compile block fails
+compilation. Plain ` ```kotlin ` blocks are illustrative and are not executed.
 
 The `verify-claims` CI job runs this on every PR and master push.

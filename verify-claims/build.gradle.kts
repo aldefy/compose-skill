@@ -41,10 +41,11 @@ dependencies {
 }
 
 val generateClaimTests = tasks.register<GenerateClaimTests>("generateClaimTests") {
-    markdownFiles.set(listOf(
-        rootProject.file("skills/compose-expert/references/modifiers.md"),
-        rootProject.file("skills/compose-expert/references/pr-review.md"),
-    ))
+    markdownFiles.set(
+        rootProject.fileTree("skills/compose-expert/references") {
+            include("*.md")
+        }.files.sortedBy { it.name }
+    )
     outputDir.set(layout.buildDirectory.dir("generated/claim-tests"))
 }
 
