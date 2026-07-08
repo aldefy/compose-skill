@@ -12,7 +12,7 @@ description: >
   session_start. Backed by actual androidx/androidx and JetBrains/compose-multiplatform-core
   source receipts. See "## When this skill applies" in SKILL.md for the full trigger
   surface.
-version: 2.3.1
+version: 2.3.2
 ---
 
 > **Installation notice:** This skill is now distributed as a plugin.

@@ -107,6 +107,9 @@ Scan the full file for each changed `@Composable` function.
 
 - [ ] **Modifier ordering follows the paint model.** Work outward-in:
   `size / fillMaxWidth` → `padding` → `background / border` → `clickable / pointerInput`.
+  Remember a later modifier can only *shrink* the constraints, never grow them: with this
+  order `padding` insets the content *inside* the fixed size (footprint unchanged). To make
+  the padding *add* to the footprint, put `padding` **before** `size`.
   Flag these specific reversals:
   - `background()` before `padding()` when the intent is background-wraps-content
     (`Modifier.padding(16.dp).background(Color.Red)` = background wraps the padding area;

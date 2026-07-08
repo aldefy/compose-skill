@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.3.2] - 2026-07-08
+
+### Fixed
+
+- **Modifier-ordering example in `references/modifiers.md` gave the wrong
+  size** (issue #14). The chain `.size(100.dp).padding(16.dp).background(...)`
+  was annotated as producing a `132x132` element; it actually stays `100x100`.
+  A modifier later in the chain can only shrink the constraints set before it,
+  never grow them — so the `padding` insets the content inward rather than
+  enlarging the footprint. Corrected the annotations, added the shrink-not-grow
+  rule, and flipped the Do/Don't guidance (put `padding` *before* `size` to add
+  to the footprint). Added a matching clarification to the modifier-ordering
+  checklist in `references/pr-review.md`.
+
 ## [2.3.1] - 2026-05-03
 
 ### Fixed

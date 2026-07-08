@@ -6,6 +6,8 @@ Modifiers are the primary way to decorate or augment a composable. They apply la
 
 Order matters. Modifiers are applied left-to-right in the DSL, but conceptually they wrap bottom-to-top. Each modifier receives a lambda that draws/measures the content below it.
 
+**Key rule:** each modifier in the chain can only *reduce* the constraints handed down by the modifiers before it — it can never grow the element past a size fixed earlier. So `padding` **before** `size` adds to the footprint; `padding` **after** `size` eats into it.
+
 ```kotlin
 // Example: different results depending on order
 Box(
@@ -14,7 +16,8 @@ Box(
         .padding(16.dp)
         .size(100.dp)
 )
-// Red background wraps the padded content, which wraps the 100x100 box
+// Footprint = 132x132. size fixes the 100x100 inner box, padding adds 16dp on
+// every side (100 + 16 + 16 = 132), and the red background wraps the whole 132x132.
 
 Box(
     Modifier
@@ -22,11 +25,13 @@ Box(
         .padding(16.dp)
         .background(Color.Red)
 )
-// 100x100 box is padded, then the whole thing (132x132) gets red background
+// Footprint = 100x100, NOT 132x132. size fixes the element at 100x100 first;
+// the later padding cannot grow it — it insets the content inward to 68x68, and
+// the red background (after padding) paints only that inner 68x68 region.
 ```
 
-**Do:** Order modifiers from outer (layout/sizing) to inner (styling/interaction).
-**Don't:** Put `size` after `padding` if you want the padding included in the final size.
+**Do:** put `padding` *before* `size` when you want the padding included in the final footprint (outer → inner: spacing, then sizing, then styling).
+**Don't:** put `size` before `padding` and expect the padding to enlarge the element — a later modifier can shrink but never expand a size set earlier in the chain.
 
 Source: `compose/ui/ui/src/commonMain/kotlin/androidx/compose/ui/Modifier.kt`
 
