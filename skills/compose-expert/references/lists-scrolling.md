@@ -67,6 +67,21 @@ LazyColumn {
 }
 ```
 
+Executable smoke check for the count overload:
+
+```kotlin verify
+// name: lazy-column-count-renders-visible-items
+// assert: text = "Item 0"
+@Composable
+fun Subject() {
+  LazyColumn {
+    items(3) { index ->
+      Text("Item $index")
+    }
+  }
+}
+```
+
 ### `itemsIndexed` — With Index
 ```kotlin
 LazyColumn {

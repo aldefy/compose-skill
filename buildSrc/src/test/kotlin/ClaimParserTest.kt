@@ -26,8 +26,27 @@ class ClaimParserTest {
         assertEquals(1, claims.size)
         val c = claims.single()
         assertEquals("size-before-padding", c.name)
-        assertEquals(listOf("width" to 100, "height" to 100), c.asserts.map { it.prop to it.dp })
+        assertEquals(listOf("width" to "100", "height" to "100"), c.asserts.map { it.prop to it.value })
         assert(c.subjectSource.contains("fun Subject()"))
+    }
+
+    @Test fun parsesTextAndClickActionAssertions() {
+        val md = """
+            ```kotlin verify
+            // name: button-semantics
+            @Composable fun Subject() {
+                Button(onClick = {}) { Text("Save") }
+            }
+            // assert: text = "Save"
+            // assert: has-click-action = "Save"
+            ```
+        """.trimIndent()
+
+        val claim = ClaimParser.parse(md, "x.md").single()
+        assertEquals(
+            listOf("text" to "Save", "has-click-action" to "Save"),
+            claim.asserts.map { it.prop to it.value },
+        )
     }
 
     @Test fun rejectsMissingName() {

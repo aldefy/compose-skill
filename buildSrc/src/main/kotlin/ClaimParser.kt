@@ -1,4 +1,4 @@
-data class Assertion(val prop: String, val dp: Int)
+data class Assertion(val prop: String, val value: String)
 data class Claim(val name: String, val subjectSource: String, val asserts: List<Assertion>)
 data class CompileBlock(val name: String, val subjectSource: String)
 
@@ -7,8 +7,9 @@ object ClaimParser {
     private val compileFenceOpen = Regex("""^```kotlin\s+compile\s*$""")
     private val fenceClose = Regex("""^```\s*$""")
     private val nameLine = Regex("""^//\s*name:\s*([a-z0-9-]+)\s*$""")
-    private val assertLine = Regex("""^//\s*assert:\s*(width|height)\s*=\s*(\d+)\.dp\s*$""")
-    private val allowedProps = setOf("width", "height")
+    private val dpAssertLine = Regex("""^//\s*assert:\s*(width|height)\s*=\s*(\d+)\.dp\s*$""")
+    private val stringAssertLine = Regex("""^//\s*assert:\s*(text|has-click-action)\s*=\s*"([^"]+)"\s*$""")
+    private val allowedProps = setOf("width", "height", "text", "has-click-action")
 
     fun parse(markdown: String, sourceFile: String): List<Claim> {
         val lines = markdown.lines()
@@ -63,14 +64,21 @@ object ClaimParser {
         if (!seenNames.add(name)) err("duplicate name '$name'")
 
         val asserts = body.mapNotNull { line ->
-            assertLine.matchEntire(line.trim())?.let { m -> Assertion(m.groupValues[1], m.groupValues[2].toInt()) }
+            val trimmed = line.trim()
+            dpAssertLine.matchEntire(trimmed)?.let { m ->
+                Assertion(m.groupValues[1], m.groupValues[2])
+            } ?: stringAssertLine.matchEntire(trimmed)?.let { m ->
+                Assertion(m.groupValues[1], m.groupValues[2])
+            }
         }
-        if (asserts.isEmpty()) err("no '// assert: <width|height> = N.dp' lines")
+        if (asserts.isEmpty()) {
+            err("no '// assert: <width|height> = N.dp' or '// assert: <text|has-click-action> = \"...\"' lines")
+        }
         asserts.forEach { if (it.prop !in allowedProps) err("unsupported assert prop '${it.prop}'") }
 
         val subject = body.filterNot { l ->
             val t = l.trim()
-            nameLine.matches(t) || assertLine.matches(t)
+            nameLine.matches(t) || dpAssertLine.matches(t) || stringAssertLine.matches(t)
         }.joinToString("\n").trim()
         if (!subject.contains(Regex("""@Composable\s+fun\s+Subject\s*\("""))) {
             err("no '@Composable fun Subject()' found")

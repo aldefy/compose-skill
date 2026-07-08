@@ -19,6 +19,18 @@ Box(
 }
 ```
 
+Executable smoke check for built-in button semantics:
+
+```kotlin verify
+// name: button-text-exposes-click-action
+// assert: text = "Click me"
+// assert: has-click-action = "Click me"
+@Composable
+fun Subject() {
+    Button(onClick = { }) { Text("Click me") }
+}
+```
+
 **Source**: `androidx/compose/ui/semantics/`
 
 ---

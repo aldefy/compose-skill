@@ -21,10 +21,7 @@ abstract class GenerateClaimTests : DefaultTask() {
         out.deleteRecursively(); out.mkdirs()
 
         val tests = claims.joinToString("\n\n") { c ->
-            val asserts = c.asserts.joinToString("\n") { a ->
-                val fn = if (a.prop == "width") "assertWidthIsEqualTo" else "assertHeightIsEqualTo"
-                "        rule.onRoot().$fn(${a.dp}.dp)"
-            }
+            val asserts = c.asserts.joinToString("\n") { a -> emitAssertion(a) }
             """
             @Test fun `${c.name}`() {
                 rule.setContent { ClaimSubjects.`${c.name}`() }
@@ -87,11 +84,27 @@ abstract class GenerateClaimTests : DefaultTask() {
         require(duplicate == null) { "duplicate kotlin $marker block name '$duplicate'" }
     }
 
+    private fun emitAssertion(assertion: Assertion): String =
+        when (assertion.prop) {
+            "width" -> "        rule.onRoot().assertWidthIsEqualTo(${assertion.value}.dp)"
+            "height" -> "        rule.onRoot().assertHeightIsEqualTo(${assertion.value}.dp)"
+            "text" -> "        rule.onNodeWithText(\"${assertion.value.escapeKotlinString()}\").assertExists()"
+            "has-click-action" ->
+                "        rule.onNodeWithText(\"${assertion.value.escapeKotlinString()}\").assertHasClickAction()"
+            else -> error("unsupported assertion prop '${assertion.prop}'")
+        }
+
+    private fun String.escapeKotlinString(): String =
+        replace("\\", "\\\\").replace("\"", "\\\"")
+
     private fun generatedImports(): String =
         """
             import androidx.compose.foundation.background
             import androidx.compose.foundation.clickable
+            import androidx.compose.foundation.lazy.LazyColumn
+            import androidx.compose.foundation.lazy.items
             import androidx.compose.foundation.layout.*
+            import androidx.compose.animation.AnimatedVisibility
             import androidx.compose.material3.*
             import androidx.compose.runtime.*
             import androidx.compose.ui.Modifier
@@ -99,6 +112,8 @@ abstract class GenerateClaimTests : DefaultTask() {
             import androidx.compose.ui.unit.dp
             import androidx.compose.ui.test.junit4.createComposeRule
             import androidx.compose.ui.test.onRoot
+            import androidx.compose.ui.test.onNodeWithText
+            import androidx.compose.ui.test.assertHasClickAction
             import androidx.compose.ui.test.assertWidthIsEqualTo
             import androidx.compose.ui.test.assertHeightIsEqualTo
             import org.junit.Rule
