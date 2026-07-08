@@ -1,0 +1,7 @@
+interface:
+  display_name: "Compose Expert"
+  short_description: "Jetpack Compose and Compose Multiplatform expert"
+  default_prompt: "Use $compose-expert to review, debug, or implement Jetpack Compose and Compose Multiplatform code."
+
+policy:
+  allow_implicit_invocation: true
