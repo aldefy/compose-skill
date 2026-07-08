@@ -180,6 +180,136 @@ the two systems inside a single screen graph.
 
 <!-- source: references/source-code/navigation-source.md — search "NavController" and "NavHost" for the Nav 2 ownership model the decision guide above contrasts with. Nav 3's NavDisplay/NavKey/backStack APIs are not bundled in this skill's source-code receipts. -->
 
+## Advanced Nav 3 patterns
+
+Because you own the back stack as plain `SnapshotStateList<NavKey>` state, the
+hard navigation problems become ordinary state problems — but a few have a
+non-obvious idiomatic shape. All of the following are verified against the Nav 3
+guidance (developer.android.com/guide/navigation/navigation-3).
+
+### Returning a result to the previous destination
+
+There is no `SavedStateHandle`/`previousBackStackEntry.savedStateHandle` result
+API in Nav 3. Because both screens' state is in your hands, pass a callback into
+the destination when you push it, or write to shared state the caller observes.
+
+```kotlin
+// Callback captured when pushing the picker; picker returns via it, then pops.
+entry<PickColor> {
+    ColorPickerScreen(
+        onPicked = { color ->
+            selectedColor = color        // hoisted state the caller reads
+            backStack.removeLastOrNull() // pop back to the caller
+        },
+    )
+}
+```
+
+Prefer hoisted state (a shared ViewModel or a state holder) over a callback when
+the result must survive process death — a lambda captured in the back stack is
+not serialisable.
+
+### Conditional / auth-gated navigation
+
+Don't try to "block" a destination. Derive the back stack from auth state: when
+the user logs out, swap the root; when a deep link targets a gated screen while
+logged out, build a stack that lands on login first.
+
+```kotlin
+// The back stack is a function of auth state — recompute the root on change.
+LaunchedEffect(isLoggedIn) {
+    if (!isLoggedIn) {
+        backStack.clear()
+        backStack.add(Login)
+    }
+}
+
+// A gated deep link while logged out: land on Login, not the gated screen.
+fun handleDeepLink(target: NavKey, isLoggedIn: Boolean) {
+    backStack.clear()
+    if (isLoggedIn) backStack.add(target) else { backStack.add(Login) /* resume target post-login */ }
+}
+```
+
+### Animated transitions between destinations
+
+`NavDisplay` animates entry changes. Set default transitions on the display, or
+per-entry via `NavEntry` metadata. For shared elements across destinations, wrap
+`NavDisplay` in a `SharedTransitionLayout` and pass
+`LocalNavAnimatedContentScope.current` down to the shared composables.
+
+```kotlin
+SharedTransitionLayout {
+    NavDisplay(
+        backStack = backStack,
+        // sharedTransitionScope drives cross-entry element animation
+        entryProvider = entryProvider {
+            entry<HomeRoute> {
+                HomeScreen(
+                    sharedTransitionScope = this@SharedTransitionLayout,
+                    animatedVisibilityScope = LocalNavAnimatedContentScope.current,
+                    onItemClick = { backStack.add(DetailsRoute(it)) },
+                )
+            }
+            entry<DetailsRoute> { key ->
+                DetailsScreen(
+                    id = key.item,
+                    sharedTransitionScope = this@SharedTransitionLayout,
+                    animatedVisibilityScope = LocalNavAnimatedContentScope.current,
+                    onBack = { backStack.removeLastOrNull() },
+                )
+            }
+        },
+    )
+}
+```
+
+### Adaptive list-detail (two-pane) with Nav 3
+
+For list-detail / supporting-pane layouts, don't hand-roll pane logic on top of
+the back stack — use the adaptive scaffold. `NavigableListDetailPaneScaffold`
+manages its own pane navigator; drive back with
+`BackNavigationBehavior.PopUntilScaffoldValueChange` so a phone pops pane-by-pane
+while a tablet keeps both panes visible.
+
+```kotlin
+NavigableListDetailPaneScaffold(
+    navigator = navigator,
+    listPane = { AnimatedPane { ListContent(onItemClick = { scope.launch {
+        navigator.navigateTo(ListDetailPaneScaffoldRole.Detail, it)
+    } }) } },
+    detailPane = { AnimatedPane { DetailContent(onClose = { scope.launch {
+        navigator.navigateBack(BackNavigationBehavior.PopUntilScaffoldValueChange)
+    } }) } },
+)
+```
+
+Keep the adaptive scaffold *inside* one Nav 3 destination — the scaffold owns
+pane state; the outer `NavDisplay` owns screen-level navigation. Don't mix the
+two levels.
+
+### Multiple back stacks (per-tab) done right
+
+Hold one `SnapshotStateList<NavKey>` per top-level tab and render the active
+one. Each tab keeps its own history across tab switches — the correct
+replacement for Nav 2's `saveState`/`restoreState`.
+
+```kotlin
+val tabStacks = remember {
+    mutableStateMapOf(
+        Tab.Home to mutableStateListOf<NavKey>(Home),
+        Tab.Search to mutableStateListOf<NavKey>(Search),
+    )
+}
+var activeTab by rememberSaveable { mutableStateOf(Tab.Home) }
+val backStack = tabStacks.getValue(activeTab)  // NavDisplay renders this one
+
+NavDisplay(backStack = backStack, entryProvider = entryProvider { /* ... */ })
+```
+
+For serialisable per-tab history across process death, back each tab's list with
+`rememberNavBackStack(...)` rather than a bare `mutableStateListOf`.
+
 ## Related
 
 - Nav 2 reference (current production patterns) → `navigation.md`

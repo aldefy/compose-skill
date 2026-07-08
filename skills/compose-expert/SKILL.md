@@ -37,7 +37,10 @@ lives here so it stays available to Claude after the skill loads.
 `Scaffold`, `NavHost`, `NavController`, `MaterialTheme`, `ColorScheme`,
 `Typography`, `LazyColumn`, `LazyRow`, `LazyVerticalGrid`, `HorizontalPager`,
 `Modifier`, `Modifier.Node`, `recomposition`, `CompositionLocal`, `Style`,
-`styleable`, `MutableStyleState`.
+`styleable`, `MutableStyleState`, `Material 3 Expressive`, `M3 Expressive`,
+`MaterialExpressiveTheme`, `ButtonGroup`, `SplitButton`,
+`FloatingActionButtonMenu`, `LoadingIndicator`, `HorizontalFloatingToolbar`,
+`NavDisplay`, `NavKey`, `rememberNavBackStack`, `NavigableListDetailPaneScaffold`.
 
 ### Compose Multiplatform / KMP
 `Compose Multiplatform`, `CMP`, `KMP`, `commonMain`, `expect`, `actual`,
@@ -107,6 +110,7 @@ first, then cite `source-code/` for implementation proof when receipts matter.
 - **`NavHost`, `NavController`, back stack, deep links, type-safe `@Serializable` routes, navigation graph, nested graphs** → `references/navigation.md`
 - **Migrating from Nav 2 to Nav 3, `NavDisplay`, `NavKey`, `rememberNavBackStack`, `NavBackStackEntry` changes** → `references/navigation-migration.md`
 - **Choosing between Nav 2 and Nav 3, type-safe navigation decision, KMP navigation** → `references/navigation-migration.md` (secondary: `references/navigation.md`)
+- **Advanced Nav 3: returning results between destinations, auth-gated/conditional navigation, animated/shared-element transitions in `NavDisplay`, adaptive list-detail (`NavigableListDetailPaneScaffold`), multiple/per-tab back stacks** → `references/navigation-migration.md`
 
 ### Paging
 
@@ -118,6 +122,7 @@ first, then cite `source-code/` for implementation proof when receipts matter.
 ### Theming and design systems
 
 - **`MaterialTheme`, `ColorScheme`, `Typography`, `Shapes`, dynamic color, M3 tokens, color roles** → `references/theming-material3.md`
+- **Material 3 Expressive, `MaterialExpressiveTheme`, `ButtonGroup`, `SplitButton`, `FloatingActionButtonMenu`, `LoadingIndicator` (wavy), `HorizontalFloatingToolbar`, `@ExperimentalMaterial3ExpressiveApi`** → `references/theming-material3.md` (motion: `references/material3-motion.md`)
 - **Atom, molecule, organism, template, component hierarchy, design system structure, reusable components, design tokens** → `references/atomic-design.md`
 - **Figma → Compose, screenshot → composable, design token translation, spec-to-code, redline interpretation** → `references/design-to-compose.md`
 - **`Style {}`, `MutableStyleState`, `Modifier.styleable()` (experimental Foundation Styles API)** → `references/styles-experimental.md`
