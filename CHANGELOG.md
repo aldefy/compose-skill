@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.4.0] - 2026-07-08
+
+### Added
+
+- **Executable Compose layout claim CI**. Added a `verify-claims` Android
+  library module that harvests ` ```kotlin verify ` blocks from reference docs,
+  generates Robolectric Compose tests, and asserts measured width/height claims
+  on the JVM. The original `.size(100.dp).padding(16.dp)` issue now has
+  executable coverage.
+- **Opt-in compile checking for documentation snippets**. Reference docs can now
+  mark self-contained snippets with ` ```kotlin compile ` to have CI compile the
+  snippet without adding a measured assertion. This catches stale or hallucinated
+  APIs while leaving illustrative fragments unexecuted.
+- **Material 3 Expressive coverage** in `references/theming-material3.md` and
+  `references/material3-motion.md`, including `MaterialExpressiveTheme`,
+  expressive component families, motion-scheme guidance, and experimental API
+  caveats.
+- **Advanced Navigation 3 patterns** in `references/navigation-migration.md`:
+  result passing, auth-gated navigation, animated/shared-element transitions,
+  adaptive list-detail, and per-tab back stacks.
+
 ## [2.3.2] - 2026-07-08
 
 ### Fixed
