@@ -8,26 +8,37 @@ Order matters. Modifiers are applied left-to-right in the DSL, but conceptually 
 
 **Key rule:** each modifier in the chain can only *reduce* the constraints handed down by the modifiers before it — it can never grow the element past a size fixed earlier. So `padding` **before** `size` adds to the footprint; `padding` **after** `size` eats into it.
 
-```kotlin
-// Example: different results depending on order
-Box(
-    Modifier
-        .background(Color.Red)
-        .padding(16.dp)
-        .size(100.dp)
-)
+```kotlin verify
+// name: padding-before-size-adds-to-footprint
+// assert: width = 132.dp
+// assert: height = 132.dp
 // Footprint = 132x132. size fixes the 100x100 inner box, padding adds 16dp on
 // every side (100 + 16 + 16 = 132), and the red background wraps the whole 132x132.
+@Composable fun Subject() {
+    Box(
+        Modifier
+            .background(Color.Red)
+            .padding(16.dp)
+            .size(100.dp)
+    )
+}
+```
 
-Box(
-    Modifier
-        .size(100.dp)
-        .padding(16.dp)
-        .background(Color.Red)
-)
+```kotlin verify
+// name: size-before-padding-keeps-footprint
+// assert: width = 100.dp
+// assert: height = 100.dp
 // Footprint = 100x100, NOT 132x132. size fixes the element at 100x100 first;
 // the later padding cannot grow it — it insets the content inward to 68x68, and
 // the red background (after padding) paints only that inner 68x68 region.
+@Composable fun Subject() {
+    Box(
+        Modifier
+            .size(100.dp)
+            .padding(16.dp)
+            .background(Color.Red)
+    )
+}
 ```
 
 **Do:** put `padding` *before* `size` when you want the padding included in the final footprint (outer → inner: spacing, then sizing, then styling).

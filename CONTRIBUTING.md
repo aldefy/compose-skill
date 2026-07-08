@@ -50,3 +50,24 @@ Run before tagging a release:
 - [ ] Copilot CLI install works.
 - [ ] Codex symlink install works.
 - [ ] Stale-install banner surfaces when old-format SKILL.md (no `version:`) is loaded.
+
+## Verifiable layout claims
+
+Reference docs can assert Compose layout behavior that CI executes. Mark a
+fenced block `kotlin verify`, give it a unique `// name:`, declare
+`// assert: width = N.dp` / `// assert: height = N.dp`, and define
+`@Composable fun Subject()`:
+
+    ```kotlin verify
+    // name: my-claim
+    // assert: width = 100.dp
+    @Composable fun Subject() { Box(Modifier.size(100.dp)) }
+    ```
+
+`./gradlew :verify-claims:testDebugUnitTest` generates one Robolectric test per
+block (via the `generateClaimTests` task, which harvests the blocks from
+`skills/compose-expert/references/`) and asserts the measured size on a headless
+JVM — no emulator. A wrong number fails CI. Plain ` ```kotlin ` blocks are
+illustrative and are not executed.
+
+The `verify-claims` CI job runs this on every PR and master push.

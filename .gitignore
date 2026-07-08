@@ -8,5 +8,18 @@ worktrees/
 # Claude local settings (never committed)
 **/.claude/settings.local.json
 
+# Local-only agent guidance (never committed)
+CLAUDE.md
+AGENTS.md
+
+# Gradle / verify-claims module
+.gradle/
+build/
+verify-claims/build/
+buildSrc/build/
+*.iml
+local.properties
+.kotlin/
+
 # macOS
 .DS_Store
