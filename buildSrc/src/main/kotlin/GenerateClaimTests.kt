@@ -95,6 +95,10 @@ abstract class GenerateClaimTests : DefaultTask() {
                 val call = if (assertion.negated) "assertDoesNotExist()" else "assertExists()"
                 "        rule.onNodeWithText(\"${assertion.value.escapeKotlinString()}\").$call"
             }
+            "content-description" -> {
+                val call = if (assertion.negated) "assertDoesNotExist()" else "assertExists()"
+                "        rule.onNodeWithContentDescription(\"${assertion.value.escapeKotlinString()}\", useUnmergedTree = true).$call"
+            }
             "has-click-action" ->
                 "        rule.onNodeWithText(\"${assertion.value.escapeKotlinString()}\").assertHasClickAction()"
             else -> error("unsupported assertion prop '${assertion.prop}'")
@@ -116,9 +120,11 @@ abstract class GenerateClaimTests : DefaultTask() {
             import androidx.compose.ui.Modifier
             import androidx.compose.ui.graphics.Color
             import androidx.compose.ui.unit.dp
+            import androidx.compose.ui.semantics.*
             import androidx.compose.ui.test.junit4.createComposeRule
             import androidx.compose.ui.test.onRoot
             import androidx.compose.ui.test.onNodeWithText
+            import androidx.compose.ui.test.onNodeWithContentDescription
             import androidx.compose.ui.test.assertHasClickAction
             import androidx.compose.ui.test.assertWidthIsEqualTo
             import androidx.compose.ui.test.assertHeightIsEqualTo

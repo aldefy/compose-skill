@@ -11,6 +11,10 @@ All notable changes to this project will be documented in this file.
   generates Robolectric Compose tests, and asserts measured width/height claims
   on the JVM. The original `.size(100.dp).padding(16.dp)` issue now has
   executable coverage.
+- **Navigation semantics coverage** in `references/navigation.md`. Added a
+  runnable bottom-navigation example that checks visible tab labels, icon
+  content descriptions, and repeated execution of the same claim to catch
+  unstable semantics behavior.
 - **Opt-in compile checking for documentation snippets**. Reference docs can now
   mark self-contained snippets with ` ```kotlin compile ` to have CI compile the
   snippet without adding a measured assertion. This catches stale or hallucinated
