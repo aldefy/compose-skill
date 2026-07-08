@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.3.2] - 2026-07-08
+
+### Fixed
+
+- **Modifier-ordering example in `references/modifiers.md` gave the wrong
+  size** (issue #14). The chain `.size(100.dp).padding(16.dp).background(...)`
+  was annotated as producing a `132x132` element; it actually stays `100x100`.
+  A modifier later in the chain can only shrink the constraints set before it,
+  never grow them — so the `padding` insets the content inward rather than
+  enlarging the footprint. Corrected the annotations, added the shrink-not-grow
+  rule, and flipped the Do/Don't guidance (put `padding` *before* `size` to add
+  to the footprint). Added a matching clarification to the modifier-ordering
+  checklist in `references/pr-review.md`.
+
+- **Corrected four more modifier-ordering errors of the same class**, surfaced
+  while reviewing the fix above:
+  - `references/pr-review.md`: the `background` / `padding` order note had its two
+    cases reversed — `background().padding()` paints the outer (padded) area,
+    `padding().background()` paints only the inner content area.
+  - `references/pr-review.md`: the `clickable` / `padding` note was reversed — it
+    is `padding()` *before* `clickable()` that shrinks the touch target, not the
+    reverse; the inline single-line example was corrected to match.
+  - `references/modifiers.md`: a fillMaxWidth/padding example had a comment that
+    contradicted its code.
+  - `references/modifiers.md`: the "Hardcoded Size After Caller's `modifier`"
+    section claimed the component's inner fixed size always wins (renders 172dp);
+    the caller's outer size actually wins, consistent with first-size-wins.
+
 ## [2.3.1] - 2026-05-03
 
 ### Fixed
