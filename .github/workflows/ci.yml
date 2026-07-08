@@ -47,3 +47,12 @@ jobs:
 
       - name: Run Compose layout claim tests
         run: ./gradlew :verify-claims:testDebugUnitTest --no-daemon
+
+      - name: Upload verify-claims report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verify-claims-report
+          path: |
+            verify-claims/build/reports/tests/testDebugUnitTest/
+            verify-claims/build/test-results/testDebugUnitTest/
