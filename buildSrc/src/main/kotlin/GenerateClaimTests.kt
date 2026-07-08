@@ -13,6 +13,10 @@ abstract class GenerateClaimTests : DefaultTask() {
     @TaskAction
     fun generate() {
         val claims = markdownFiles.get().flatMap { f -> ClaimParser.parse(f.readText(), f.name) }
+        val compileBlocks = markdownFiles.get().flatMap { f -> ClaimParser.parseCompileBlocks(f.readText(), f.name) }
+        requireUniqueNames(claims.map { it.name }, "verify")
+        requireUniqueNames(compileBlocks.map { it.name }, "compile")
+
         val out = outputDir.get().asFile
         out.deleteRecursively(); out.mkdirs()
 
@@ -31,33 +35,17 @@ abstract class GenerateClaimTests : DefaultTask() {
 
         val subjects = claims.joinToString("\n\n") { c ->
             // rename Subject() -> the claim name so many blocks coexist
-            val renamed = c.subjectSource.replace(
-                Regex("""@Composable\s+fun\s+Subject\s*\("""),
-                "@Composable fun `${c.name}`(",
-            )
-            renamed.prependIndent("    ")
+            renameSubject(c.subjectSource, c.name).prependIndent("    ")
+        }
+
+        val compileSubjects = compileBlocks.joinToString("\n\n") { c ->
+            // No @Test is emitted. If this file compiles, the doc block compiles.
+            renameSubject(c.subjectSource, c.name).prependIndent("    ")
         }
 
         File(out, "GeneratedClaimTests.kt").writeText(
             """
-            import androidx.compose.foundation.background
-            import androidx.compose.foundation.clickable
-            import androidx.compose.foundation.layout.*
-            import androidx.compose.material3.*
-            import androidx.compose.runtime.Composable
-            import androidx.compose.ui.Modifier
-            import androidx.compose.ui.graphics.Color
-            import androidx.compose.ui.unit.dp
-            import androidx.compose.ui.test.junit4.createComposeRule
-            import androidx.compose.ui.test.onRoot
-            import androidx.compose.ui.test.assertWidthIsEqualTo
-            import androidx.compose.ui.test.assertHeightIsEqualTo
-            import org.junit.Rule
-            import org.junit.Test
-            import org.junit.runner.RunWith
-            import org.robolectric.RobolectricTestRunner
-            import org.robolectric.annotation.Config
-            import org.robolectric.annotation.GraphicsMode
+            ${generatedImports()}
 
             @RunWith(RobolectricTestRunner::class)
             @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -73,6 +61,51 @@ abstract class GenerateClaimTests : DefaultTask() {
             }
             """.trimIndent(),
         )
-        logger.lifecycle("generateClaimTests: emitted ${claims.size} claim test(s)")
+
+        File(out, "GeneratedCompileOnlySubjects.kt").writeText(
+            """
+            ${generatedImports()}
+
+            object CompileOnlySubjects {
+            $compileSubjects
+            }
+            """.trimIndent(),
+        )
+        logger.lifecycle(
+            "generateClaimTests: emitted ${claims.size} claim test(s), ${compileBlocks.size} compile-only subject(s)",
+        )
     }
+
+    private fun renameSubject(source: String, name: String): String =
+        source.replace(
+            Regex("""@Composable\s+fun\s+Subject\s*\("""),
+            "@Composable fun `$name`(",
+        )
+
+    private fun requireUniqueNames(names: List<String>, marker: String) {
+        val duplicate = names.groupingBy { it }.eachCount().filterValues { it > 1 }.keys.firstOrNull()
+        require(duplicate == null) { "duplicate kotlin $marker block name '$duplicate'" }
+    }
+
+    private fun generatedImports(): String =
+        """
+            import androidx.compose.foundation.background
+            import androidx.compose.foundation.clickable
+            import androidx.compose.foundation.layout.*
+            import androidx.compose.material3.*
+            import androidx.compose.runtime.*
+            import androidx.compose.ui.Modifier
+            import androidx.compose.ui.graphics.Color
+            import androidx.compose.ui.unit.dp
+            import androidx.compose.ui.test.junit4.createComposeRule
+            import androidx.compose.ui.test.onRoot
+            import androidx.compose.ui.test.assertWidthIsEqualTo
+            import androidx.compose.ui.test.assertHeightIsEqualTo
+            import org.junit.Rule
+            import org.junit.Test
+            import org.junit.runner.RunWith
+            import org.robolectric.RobolectricTestRunner
+            import org.robolectric.annotation.Config
+            import org.robolectric.annotation.GraphicsMode
+        """.trimIndent()
 }

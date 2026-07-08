@@ -46,4 +46,41 @@ class ClaimParserTest {
         val md = "```kotlin verify\n// name: n\n// assert: width = 1.dp\n```"
         assertThrows(IllegalStateException::class.java) { ClaimParser.parse(md, "x.md") }
     }
+
+    @Test fun parsesCompileBlocksSeparatelyFromVerifyBlocks() {
+        val md = """
+            ```kotlin compile
+            // name: stable-material-button
+            @Composable fun Subject() {
+                Button(onClick = {}) { Text("Save") }
+            }
+            ```
+
+            ```kotlin verify
+            // name: measured-box
+            @Composable fun Subject() { Box(Modifier.size(100.dp)) }
+            // assert: width = 100.dp
+            ```
+        """.trimIndent()
+
+        val compileBlocks = ClaimParser.parseCompileBlocks(md, "x.md")
+        assertEquals(1, compileBlocks.size)
+        assertEquals("stable-material-button", compileBlocks.single().name)
+        assert(compileBlocks.single().subjectSource.contains("fun Subject()"))
+    }
+
+    @Test fun rejectsCompileBlockWithoutName() {
+        val md = "```kotlin compile\n@Composable fun Subject() {}\n```"
+        val ex = assertThrows(IllegalStateException::class.java) {
+            ClaimParser.parseCompileBlocks(md, "x.md")
+        }
+        assert(ex.message!!.contains("name"))
+    }
+
+    @Test fun rejectsCompileBlockWithoutSubject() {
+        val md = "```kotlin compile\n// name: missing-subject\nval x = 1\n```"
+        assertThrows(IllegalStateException::class.java) {
+            ClaimParser.parseCompileBlocks(md, "x.md")
+        }
+    }
 }

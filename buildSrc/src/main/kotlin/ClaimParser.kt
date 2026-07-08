@@ -1,8 +1,10 @@
 data class Assertion(val prop: String, val dp: Int)
 data class Claim(val name: String, val subjectSource: String, val asserts: List<Assertion>)
+data class CompileBlock(val name: String, val subjectSource: String)
 
 object ClaimParser {
-    private val fenceOpen = Regex("""^```kotlin\s+verify\s*$""")
+    private val verifyFenceOpen = Regex("""^```kotlin\s+verify\s*$""")
+    private val compileFenceOpen = Regex("""^```kotlin\s+compile\s*$""")
     private val fenceClose = Regex("""^```\s*$""")
     private val nameLine = Regex("""^//\s*name:\s*([a-z0-9-]+)\s*$""")
     private val assertLine = Regex("""^//\s*assert:\s*(width|height)\s*=\s*(\d+)\.dp\s*$""")
@@ -15,7 +17,7 @@ object ClaimParser {
         var i = 0
         var blockIndex = 0
         while (i < lines.size) {
-            if (fenceOpen.matches(lines[i].trim())) {
+            if (verifyFenceOpen.matches(lines[i].trim())) {
                 val body = mutableListOf<String>()
                 i++
                 while (i < lines.size && !fenceClose.matches(lines[i].trim())) {
@@ -27,6 +29,27 @@ object ClaimParser {
             i++
         }
         return claims
+    }
+
+    fun parseCompileBlocks(markdown: String, sourceFile: String): List<CompileBlock> {
+        val lines = markdown.lines()
+        val blocks = mutableListOf<CompileBlock>()
+        val seenNames = mutableSetOf<String>()
+        var i = 0
+        var blockIndex = 0
+        while (i < lines.size) {
+            if (compileFenceOpen.matches(lines[i].trim())) {
+                val body = mutableListOf<String>()
+                i++
+                while (i < lines.size && !fenceClose.matches(lines[i].trim())) {
+                    body.add(lines[i]); i++
+                }
+                blocks.add(toCompileBlock(body, sourceFile, blockIndex, seenNames))
+                blockIndex++
+            }
+            i++
+        }
+        return blocks
     }
 
     private fun toClaim(
@@ -53,5 +76,22 @@ object ClaimParser {
             err("no '@Composable fun Subject()' found")
         }
         return Claim(name, subject, asserts)
+    }
+
+    private fun toCompileBlock(
+        body: List<String>, sourceFile: String, idx: Int, seenNames: MutableSet<String>,
+    ): CompileBlock {
+        fun err(msg: String): Nothing =
+            error("$sourceFile: compile block #$idx: $msg")
+
+        val name = body.firstNotNullOfOrNull { nameLine.matchEntire(it.trim())?.groupValues?.get(1) }
+            ?: err("missing '// name:' line")
+        if (!seenNames.add(name)) err("duplicate name '$name'")
+
+        val subject = body.filterNot { l -> nameLine.matches(l.trim()) }.joinToString("\n").trim()
+        if (!subject.contains(Regex("""@Composable\s+fun\s+Subject\s*\("""))) {
+            err("no '@Composable fun Subject()' found")
+        }
+        return CompileBlock(name, subject)
     }
 }
