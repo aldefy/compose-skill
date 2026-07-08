@@ -39,3 +39,19 @@ dependencies {
     testImplementation("org.robolectric:robolectric:4.14")
     testImplementation("androidx.test.ext:junit:1.2.1")
 }
+
+val generateClaimTests = tasks.register<GenerateClaimTests>("generateClaimTests") {
+    markdownFiles.set(listOf(
+        rootProject.file("skills/compose-expert/references/modifiers.md"),
+        rootProject.file("skills/compose-expert/references/pr-review.md"),
+    ))
+    outputDir.set(layout.buildDirectory.dir("generated/claim-tests"))
+}
+
+android.sourceSets.getByName("test").java.srcDir(
+    layout.buildDirectory.dir("generated/claim-tests"),
+)
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    if (name.contains("UnitTest")) dependsOn(generateClaimTests)
+}
