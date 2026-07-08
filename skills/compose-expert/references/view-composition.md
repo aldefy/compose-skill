@@ -109,6 +109,19 @@ ListItem(
 
 **Key principle:** Slots accept `@Composable` lambdas, not pre-composed values. This ensures composition is deferred and scope-aware.
 
+Executable check for the slot pattern:
+
+```kotlin verify
+// name: slot-pattern-renders-child-content
+// assert: text = "Hello"
+@Composable
+fun Subject() {
+    Card {
+        Text("Hello")
+    }
+}
+```
+
 ```kotlin
 // ❌ Wrong: passes composed value
 fun CustomLayout(content: String) { ... }
