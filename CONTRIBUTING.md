@@ -82,4 +82,10 @@ contract:
 number fails CI; a missing or stale API in an opt-in compile block fails
 compilation. Plain ` ```kotlin ` blocks are illustrative and are not executed.
 
+The executable claim format supports a few trust-oriented knobs:
+
+- `// repeat: N` runs the same claim `N` times to catch flaky or unstable rules.
+- `// assert-not: text = "..."` checks that a string is absent from the rendered semantics tree.
+- `// assert: has-click-action = "..."` checks clickable semantics on a node with matching text.
+
 The `verify-claims` CI job runs this on every PR and master push.

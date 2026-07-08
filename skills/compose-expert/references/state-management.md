@@ -29,9 +29,14 @@ Both associate state with a composition key, but differ in persistence scope.
 - Lost on process death, configuration changes, back navigation
 - Best for UI state: selection, expanded/collapsed, scroll position
 
-```kotlin
+```kotlin verify
+// name: remember-counter-renders-clickable-state
+// repeat: 3
+// assert: text = "Count: 0"
+// assert: has-click-action = "Count: 0"
+// assert-not: text = "Count: 1"
 @Composable
-fun Counter() {
+fun Subject() {
     var count by remember { mutableIntStateOf(0) }
     Button(onClick = { count++ }) {
         Text("Count: $count")

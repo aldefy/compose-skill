@@ -10,6 +10,7 @@ Order matters. Modifiers are applied left-to-right in the DSL, but conceptually 
 
 ```kotlin verify
 // name: padding-before-size-adds-to-footprint
+// repeat: 3
 // assert: width = 132.dp
 // assert: height = 132.dp
 // Footprint = 132x132. size fixes the 100x100 inner box, padding adds 16dp on
@@ -26,6 +27,7 @@ Order matters. Modifiers are applied left-to-right in the DSL, but conceptually 
 
 ```kotlin verify
 // name: size-before-padding-keeps-footprint
+// repeat: 3
 // assert: width = 100.dp
 // assert: height = 100.dp
 // Footprint = 100x100, NOT 132x132. size fixes the element at 100x100 first;

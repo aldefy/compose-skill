@@ -4,8 +4,11 @@
 
 `MaterialTheme` is the root provider for design tokens in Compose Material 3. It establishes `colorScheme`, `typography`, and `shapes` across your app.
 
-```kotlin compile
+```kotlin verify
 // name: material-theme-provides-tokens
+// repeat: 3
+// assert: text = "Uses MaterialTheme.typography.bodyLarge"
+// assert-not: text = "MaterialExpressiveTheme"
 @Composable
 fun Subject() {
     MaterialTheme(

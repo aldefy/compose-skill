@@ -6,11 +6,15 @@ CompositionLocals provide a way to pass data implicitly down the composition tre
 
 A CompositionLocal is a slot in the composition that holds a value accessible to any descendant composable without explicit parameter passing. Values are provided using `CompositionLocalProvider` and accessed via `current`.
 
-```kotlin
+```kotlin verify
+// name: composition-local-provider-overrides-default
+// repeat: 3
+// assert: text = "Dark"
+// assert-not: text = "Light"
 val localAppTheme = compositionLocalOf { "Light" }
 
 @Composable
-fun MyScreen() {
+fun Subject() {
   CompositionLocalProvider(localAppTheme provides "Dark") {
     DescendantComposable() // Can access "Dark" via localAppTheme.current
   }

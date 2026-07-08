@@ -57,6 +57,23 @@ A type is **stable** if:
 - Overrides to `equals()` and `hashCode()` are based on stable properties
 - Recomposition is skipped when the same instance is passed
 
+Executable check for a stable model rendered through a composable:
+
+```kotlin verify
+// name: stable-model-renders-text
+// repeat: 3
+// assert: text = "Ada"
+// assert-not: text = "Bob"
+@Immutable
+data class Person(val name: String, val age: Int)
+
+@Composable
+fun Subject() {
+    val person = Person("Ada", 42)
+    Text(person.name)
+}
+```
+
 Mark stable types explicitly:
 
 ```kotlin

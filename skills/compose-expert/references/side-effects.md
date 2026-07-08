@@ -86,6 +86,23 @@ Source: `compose/runtime/runtime/src/commonMain/kotlin/androidx/compose/runtime/
 
 `LaunchedEffect` launches a coroutine in a scope tied to the composable's lifecycle. The coroutine is cancelled if the key changes or the composable leaves composition.
 
+Executable check for the common "load then render" pattern:
+
+```kotlin verify
+// name: launched-effect-updates-ui
+// repeat: 3
+// assert: text = "loaded"
+// assert-not: text = "loading"
+@Composable
+fun Subject() {
+    var data by remember { mutableStateOf("loading") }
+    LaunchedEffect(Unit) {
+        data = "loaded"
+    }
+    Text(data)
+}
+```
+
 ```kotlin
 @Composable
 fun DataLoader(userId: String) {

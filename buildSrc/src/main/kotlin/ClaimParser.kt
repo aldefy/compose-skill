@@ -1,5 +1,5 @@
-data class Assertion(val prop: String, val dp: Int)
-data class Claim(val name: String, val subjectSource: String, val asserts: List<Assertion>)
+data class Assertion(val prop: String, val value: String, val negated: Boolean = false)
+data class Claim(val name: String, val subjectSource: String, val asserts: List<Assertion>, val repeatCount: Int)
 data class CompileBlock(val name: String, val subjectSource: String)
 
 object ClaimParser {
@@ -7,8 +7,11 @@ object ClaimParser {
     private val compileFenceOpen = Regex("""^```kotlin\s+compile\s*$""")
     private val fenceClose = Regex("""^```\s*$""")
     private val nameLine = Regex("""^//\s*name:\s*([a-z0-9-]+)\s*$""")
-    private val assertLine = Regex("""^//\s*assert:\s*(width|height)\s*=\s*(\d+)\.dp\s*$""")
-    private val allowedProps = setOf("width", "height")
+    private val repeatLine = Regex("""^//\s*repeat:\s*(\d+)\s*$""")
+    private val dpAssertLine = Regex("""^//\s*assert:\s*(width|height)\s*=\s*(\d+)\.dp\s*$""")
+    private val stringAssertLine = Regex("""^//\s*assert:\s*(text|has-click-action)\s*=\s*"([^"]+)"\s*$""")
+    private val stringNegativeAssertLine = Regex("""^//\s*assert-not:\s*(text)\s*=\s*"([^"]+)"\s*$""")
+    private val allowedProps = setOf("width", "height", "text", "has-click-action")
 
     fun parse(markdown: String, sourceFile: String): List<Claim> {
         val lines = markdown.lines()
@@ -62,20 +65,32 @@ object ClaimParser {
             ?: err("missing '// name:' line")
         if (!seenNames.add(name)) err("duplicate name '$name'")
 
+        val repeatCount = body.firstNotNullOfOrNull { repeatLine.matchEntire(it.trim())?.groupValues?.get(1)?.toInt() } ?: 1
+        if (repeatCount < 1) err("repeat count must be >= 1")
+
         val asserts = body.mapNotNull { line ->
-            assertLine.matchEntire(line.trim())?.let { m -> Assertion(m.groupValues[1], m.groupValues[2].toInt()) }
+            val trimmed = line.trim()
+            dpAssertLine.matchEntire(trimmed)?.let { m ->
+                Assertion(m.groupValues[1], m.groupValues[2])
+            } ?: stringAssertLine.matchEntire(trimmed)?.let { m ->
+                Assertion(m.groupValues[1], m.groupValues[2])
+            } ?: stringNegativeAssertLine.matchEntire(trimmed)?.let { m ->
+                Assertion(m.groupValues[1], m.groupValues[2], true)
+            }
         }
-        if (asserts.isEmpty()) err("no '// assert: <width|height> = N.dp' lines")
+        if (asserts.isEmpty()) {
+            err("no '// assert:' or '// assert-not:' lines")
+        }
         asserts.forEach { if (it.prop !in allowedProps) err("unsupported assert prop '${it.prop}'") }
 
         val subject = body.filterNot { l ->
             val t = l.trim()
-            nameLine.matches(t) || assertLine.matches(t)
+            nameLine.matches(t) || repeatLine.matches(t) || dpAssertLine.matches(t) || stringAssertLine.matches(t) || stringNegativeAssertLine.matches(t)
         }.joinToString("\n").trim()
         if (!subject.contains(Regex("""@Composable\s+fun\s+Subject\s*\("""))) {
             err("no '@Composable fun Subject()' found")
         }
-        return Claim(name, subject, asserts)
+        return Claim(name, subject, asserts, repeatCount)
     }
 
     private fun toCompileBlock(

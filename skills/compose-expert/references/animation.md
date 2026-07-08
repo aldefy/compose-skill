@@ -33,7 +33,13 @@ Each automatically handles coroutines and recomposition. Use the `label` paramet
 
 Controls appear/disappear animations with enter and exit transitions.
 
-```kotlin
+```kotlin verify
+// name: animated-visibility-renders-visible-content
+// repeat: 3
+// assert: text = "Hello!"
+// assert-not: text = "Goodbye!"
+@Composable
+fun Subject() {
 var visible by remember { mutableStateOf(true) }
 
 AnimatedVisibility(visible = visible) {
@@ -42,6 +48,7 @@ AnimatedVisibility(visible = visible) {
 
 // Trigger
 Button(onClick = { visible = !visible }) { Text("Toggle") }
+}
 ```
 
 ### Enter/Exit Transitions
