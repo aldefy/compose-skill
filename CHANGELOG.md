@@ -16,6 +16,20 @@ All notable changes to this project will be documented in this file.
   to the footprint). Added a matching clarification to the modifier-ordering
   checklist in `references/pr-review.md`.
 
+- **Corrected four more modifier-ordering errors of the same class**, surfaced
+  while reviewing the fix above:
+  - `references/pr-review.md`: the `background` / `padding` order note had its two
+    cases reversed — `background().padding()` paints the outer (padded) area,
+    `padding().background()` paints only the inner content area.
+  - `references/pr-review.md`: the `clickable` / `padding` note was reversed — it
+    is `padding()` *before* `clickable()` that shrinks the touch target, not the
+    reverse; the inline single-line example was corrected to match.
+  - `references/modifiers.md`: a fillMaxWidth/padding example had a comment that
+    contradicted its code.
+  - `references/modifiers.md`: the "Hardcoded Size After Caller's `modifier`"
+    section claimed the component's inner fixed size always wins (renders 172dp);
+    the caller's outer size actually wins, consistent with first-size-wins.
+
 ## [2.3.1] - 2026-05-03
 
 ### Fixed

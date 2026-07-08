@@ -111,16 +111,21 @@ Scan the full file for each changed `@Composable` function.
   order `padding` insets the content *inside* the fixed size (footprint unchanged). To make
   the padding *add* to the footprint, put `padding` **before** `size`.
   Flag these specific reversals:
-  - `background()` before `padding()` when the intent is background-wraps-content
-    (`Modifier.padding(16.dp).background(Color.Red)` = background wraps the padding area;
-    `Modifier.background(Color.Red).padding(16.dp)` = background does NOT include the padding area)
-  - `clickable()` before `padding()` — shrinks the effective touch target
-  - `size()` or `fillMaxWidth()` after `padding()` — the size constraint no longer includes the padding
+  - Wrong `background` / `padding` order for the intent
+    (`Modifier.background(Color.Red).padding(16.dp)` = background paints the **outer** area,
+    padding then insets the content = background *includes* the padded border;
+    `Modifier.padding(16.dp).background(Color.Red)` = padding insets first, so the background
+    paints only the **inner** content area and does NOT cover the padded border)
+  - `padding()` before `clickable()` — excludes the padding from the touch target, shrinking it.
+    `clickable()` before `padding()` makes the whole padded area tappable (usually what you want).
+  - `size()` or `fillMaxWidth()` after `padding()` when the intent is padding-adds-to-footprint —
+    the earlier `padding` gets absorbed into the fixed size instead of expanding it. (This order is
+    fine when you *want* the padding to inset content inside a fixed size — flag only against intent.)
 
 - [ ] **Single-line modifier check.** Read the full constructor line even when unchanged in the diff.
   Verify ordering is correct even when the entire modifier chain is written inline:
-  `Row(modifier = Modifier.fillMaxWidth().clickable { }.padding(16.dp))` — this has wrong ordering
-  (`clickable` before `padding` shrinks touch target).
+  `Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable { })` — this has wrong ordering
+  (`padding` before `clickable` excludes the 16.dp from the touch target, shrinking it).
 
 - [ ] **No `padding` + `offset` for the same adjustment.** `offset` does not affect layout;
   `padding` does. They are not interchangeable.

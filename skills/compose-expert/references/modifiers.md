@@ -51,7 +51,8 @@ Box(Modifier.size(width = 200.dp, height = 100.dp)) { }
 Box(Modifier.fillMaxWidth(0.8f)) { }  // 80% of parent width
 Box(Modifier.fillMaxSize()) { }       // 100% of parent
 
-// Do: use fillMaxWidth before adding padding for alignment clarity
+// Do: apply padding before fillMaxWidth so the child fills the *padded* region
+// (padding insets first, then fillMaxWidth expands within that inset area)
 Column(Modifier.fillMaxWidth()) {
     Box(Modifier.padding(16.dp).fillMaxWidth()) { }
 }
@@ -302,31 +303,32 @@ composeTestRule.onNodeWithTag("my_box").assertIsDisplayed()
 
 ### Hardcoded Size After Caller's `modifier` Parameter
 
-When a composable accepts `modifier: Modifier = Modifier` and chains fixed `.height()` / `.width()` / `.size()` after it, caller size constraints are silently ignored or clamped.
+When a composable accepts `modifier: Modifier = Modifier` and chains a fixed `.height()` / `.width()` / `.size()` **after** it, the component's own size silently overrides whatever the caller passed — the caller's size modifier is applied first (outer) and wins.
 
 ```kotlin
-// BAD: caller's height is outer constraint, component's 172.dp is inner — component always renders at 172dp
+// BAD: the caller's size (outer) is fixed first, so the component's inner .height(172.dp)
+// is coerced back to the caller's value — the component's own 172.dp is silently ignored.
 @Composable
 fun BannerCard(
     modifier: Modifier = Modifier,
 ) {
     Box(
-        modifier = modifier          // caller constraints applied first (outer)
+        modifier = modifier          // caller constraints applied first (outer) — these win
             .fillMaxWidth()
-            .height(172.dp)          // inner — wins when smaller, clamped when larger
+            .height(172.dp)          // inner — a later modifier can't override a size fixed earlier
             .clip(RoundedCornerShape(18.dp))
             .background(Color.Green.copy(alpha = 0.08f)),
     )
 }
 
-// Caller expects 200dp but gets 172dp:
+// Caller passes 200dp — renders 200dp, NOT 172dp (the outer fixed size wins):
 BannerCard(modifier = Modifier.height(200.dp))
 
-// Caller expects 100dp — component gets clamped/squished:
+// Caller passes 100dp — renders 100dp, and the component's intended 172dp is lost:
 BannerCard(modifier = Modifier.height(100.dp))
 ```
 
-**Why it happens:** Modifier chain resolves outer-to-inner (left-to-right). Outer constraint sets max bounds, inner constraint requests within those bounds. First size constraint wins as the ceiling.
+**Why it happens:** the modifier chain resolves outer-to-inner (left-to-right), and a fixed size passes a tight `[X, X]` constraint down. A later `.height(172.dp)` can only operate *within* that constraint — it can shrink but never grow past it — so it is coerced back to the caller's `X`. First (outer) size wins. To let the component set its own default while still honoring the caller, put the component's size **before** `modifier` so the caller can override it: `Modifier.height(172.dp).then(modifier)`.
 
 **Fix option 1:** Component defaults first, caller can override via `.then(modifier)`:
 ```kotlin
