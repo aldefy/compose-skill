@@ -293,6 +293,123 @@ fun MyButton() {
 
 ---
 
+## Material 3 Expressive
+
+M3 Expressive is the latest iteration of Material Design 3 — research-backed
+enhancements to theming, components, motion, and typography, aligned with the
+Android 16 visual style. It is *not* a separate library: the expressive
+components ship inside `androidx.compose.material3:material3`, and most are still
+behind an experimental opt-in.
+
+> **Stability:** the expressive component APIs are annotated
+> `@ExperimentalMaterial3ExpressiveApi` and their exact parameter lists still
+> shift across `compose-bom` alphas. Treat every signature below as *shape, not
+> gospel* — confirm against the BOM version you actually resolve. This is
+> verified opt-in behavior, not the frozen final API.
+
+### MaterialExpressiveTheme
+
+Expressive components expect an expressive theme in scope. Use
+`MaterialExpressiveTheme` instead of `MaterialTheme` at the app root when you
+adopt expressive components — it wires the expressive color, shape, and motion
+defaults (including `MotionScheme.expressive()`; see
+`references/material3-motion.md`).
+
+```kotlin
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+fun App() {
+    MaterialExpressiveTheme(
+        colorScheme = expressiveLightColorScheme(), // or dynamic / dark
+        // motionScheme defaults to MotionScheme.expressive() under this theme
+    ) {
+        // expressive components resolve their defaults from here
+    }
+}
+```
+
+**Do:** wrap expressive components in `MaterialExpressiveTheme`.
+**Don't:** drop an expressive component inside a plain `MaterialTheme` and expect
+expressive motion/shape defaults — you get the standard scheme.
+
+### Expressive components — what each is for
+
+Each is `@ExperimentalMaterial3ExpressiveApi`; wrap the call site (or file) in
+`@OptIn(ExperimentalMaterial3ExpressiveApi::class)`. Parameter lists shown are
+the *shape* — verify against your BOM.
+
+- **`ButtonGroup`** — a connected row of buttons that share a group shape and
+  react as a set (press animations reflow neighbors). For segmented, related
+  actions where a `Row` of separate buttons would read as disconnected.
+
+  ```kotlin
+  @OptIn(ExperimentalMaterial3ExpressiveApi::class)
+  ButtonGroup(
+      overflowIndicator = { /* menu for items past the width */ },
+  ) {
+      // clickableItem(...) / toggleableItem(...) entries — confirm the exact
+      // scope API against your BOM
+  }
+  ```
+
+- **`SplitButton`** — a primary action fused with a secondary trailing
+  affordance (usually a dropdown). Two tap targets, one visual unit.
+
+  ```kotlin
+  @OptIn(ExperimentalMaterial3ExpressiveApi::class)
+  SplitButtonLayout(
+      leadingButton = { /* SplitButtonDefaults.LeadingButton { ... } */ },
+      trailingButton = { /* SplitButtonDefaults.TrailingButton { ... } */ },
+  )
+  ```
+
+- **`FloatingActionButtonMenu` + `ToggleFloatingActionButton`** — a FAB that
+  expands into a menu of related actions. The toggle FAB is the button that
+  opens/closes; the menu holds the items.
+
+  ```kotlin
+  @OptIn(ExperimentalMaterial3ExpressiveApi::class)
+  FloatingActionButtonMenu(
+      expanded = expanded,
+      button = {
+          ToggleFloatingActionButton(
+              checked = expanded,
+              onCheckedChange = { expanded = it },
+          ) { /* icon */ }
+      },
+  ) {
+      // FloatingActionButtonMenuItem(...) entries
+  }
+  ```
+
+- **`LoadingIndicator`** — the expressive progress indicator, including the
+  contained and "wavy" variants. Replaces a plain `CircularProgressIndicator`
+  where the expressive look is wanted.
+
+  ```kotlin
+  @OptIn(ExperimentalMaterial3ExpressiveApi::class)
+  LoadingIndicator() // determinate overload takes a progress lambda
+  ```
+
+- **`HorizontalFloatingToolbar`** — a floating, pill-shaped toolbar of actions
+  that hovers over content (often paired with an attached FAB).
+
+  ```kotlin
+  @OptIn(ExperimentalMaterial3ExpressiveApi::class)
+  HorizontalFloatingToolbar(expanded = true) {
+      // action IconButtons
+  }
+  ```
+
+### Expressive shape & typography
+
+The expressive theme ships a richer shape scale (more corner sizes, including
+larger and asymmetric families) and expressive type roles. Read them from the
+theme rather than hardcoding — `MaterialTheme.shapes` / `MaterialTheme.typography`
+resolve to the expressive values under `MaterialExpressiveTheme`.
+
+---
+
 ## Anti-Patterns
 
 ### Hardcoding Colors
@@ -325,6 +442,13 @@ fun MyCard(content: @Composable () -> Unit) {
 ### Mixing Material 2 and Material 3
 Don't import both `androidx.compose.material` and `androidx.compose.material3`. Choose M3 for new projects.
 
+### Expressive components without an expressive theme
+Don't place `ButtonGroup`, `SplitButton`, `FloatingActionButtonMenu`, etc. under
+a plain `MaterialTheme`. Without `MaterialExpressiveTheme` they fall back to the
+standard motion/shape scheme and lose the expressive feel they exist for. Also
+don't scatter `@OptIn(ExperimentalMaterial3ExpressiveApi::class)` and then pin an
+old `compose-bom` — the signatures move between alphas; keep the BOM current.
+
 ### Not Providing All Theme Parameters
 Partial `MaterialTheme` calls may leave descendants with defaults:
 
@@ -347,3 +471,4 @@ MaterialTheme(
 - **Material 3 Tokens**: https://m3.material.io/
 - **Compose Material3 Docs**: https://developer.android.com/develop/ui/compose/designsystems/material3
 - **Dynamic Color**: Requires `androidx.compose.material3:material3` >= 1.1.0 and Android 12+
+- **M3 Expressive**: https://developer.android.com/develop/ui/compose/designsystems/material3 — expressive components live in `androidx.compose.material3:material3` behind `@ExperimentalMaterial3ExpressiveApi`; confirm signatures against your resolved `compose-bom`.

@@ -283,3 +283,54 @@ Patterns to catch in code review. See also `references/pr-review.md` Category 3.
 | Same easing on both `enter` and `exit` | Wrong pairing | Decelerate for enter, Accelerate for exit |
 | Duration > 600ms on non-shared-element | Too slow | Reduce to `DurationLong1`–`DurationLong2` |
 | New component uses explicit `tween()` instead of `MotionScheme` | Not theme-aware | Use `MaterialTheme.motionScheme.defaultSpatialSpec()` / `defaultEffectsSpec()` |
+
+---
+
+## 8. Expressive motion
+
+`MotionScheme.expressive()` is the M3 recommended default and is what
+`MaterialExpressiveTheme` installs. Choosing it changes the *character* of every
+`MotionScheme`-driven animation in the app — the spec functions above resolve to
+bouncier, more energetic springs than `standard()`. You do not change call sites;
+the scheme changes underneath them.
+
+```kotlin
+// Set once at the root — every defaultSpatialSpec()/defaultEffectsSpec() reader
+// downstream now animates with the expressive character.
+MaterialTheme(motionScheme = MotionScheme.expressive()) { /* app */ }
+// (MaterialExpressiveTheme does this for you — see references/theming-material3.md)
+```
+
+### Spatial vs effects under the expressive scheme
+
+The spatial/effects split still holds, and it matters *more* under expressive
+because the spatial springs are the ones with visible overshoot:
+
+- **Spatial** (`defaultSpatialSpec`, `fastSpatialSpec`, `slowSpatialSpec`) —
+  position/size/layout. Under `expressive()` these carry the signature bounce.
+  Use them for movement.
+- **Effects** (`defaultEffectsSpec`, …) — opacity/color. Kept near-critically
+  damped even under expressive, because bouncing alpha reads as a glitch. Use
+  them for fades and color, never for the "springy" feel.
+
+**Rule:** springiness belongs on spatial changes, not on effects. Animating a
+color/alpha with a *spatial* spec is the most common expressive-motion mistake —
+it makes fades wobble.
+
+### The expressive components animate through this scheme
+
+The expressive components in `references/theming-material3.md` (`ButtonGroup`,
+`FloatingActionButtonMenu`, `LoadingIndicator`, etc.) read their motion from the
+theme's `motionScheme`. That is *why* they must sit under `MaterialExpressiveTheme`
+— placed under a plain `MaterialTheme(motionScheme = MotionScheme.standard())`
+they still function but lose the expressive motion they were designed around.
+
+> **Stability:** the components are `@ExperimentalMaterial3ExpressiveApi`; the
+> `MotionScheme` API itself is the stable, verified surface you should lean on.
+
+### Review flag
+
+| Pattern in Code | Flag | Fix |
+|----------------|------|-----|
+| Effects/alpha animated with `defaultSpatialSpec()` under `expressive()` | Wobbling fade | Use `defaultEffectsSpec()` for opacity/color |
+| Expressive components under `MaterialTheme` (not `MaterialExpressiveTheme`) | Loses expressive motion | Host under `MaterialExpressiveTheme` |
