@@ -19,6 +19,7 @@ verify-claims/build/
 buildSrc/build/
 *.iml
 local.properties
+.kotlin/
 
 # macOS
 .DS_Store
