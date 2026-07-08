@@ -71,7 +71,9 @@ Executable smoke check for the count overload:
 
 ```kotlin verify
 // name: lazy-column-count-renders-visible-items
+// repeat: 3
 // assert: text = "Item 0"
+// assert-not: text = "Item 3"
 @Composable
 fun Subject() {
   LazyColumn {

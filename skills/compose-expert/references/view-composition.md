@@ -113,7 +113,9 @@ Executable check for the slot pattern:
 
 ```kotlin verify
 // name: slot-pattern-renders-child-content
+// repeat: 3
 // assert: text = "Hello"
+// assert-not: text = "World"
 @Composable
 fun Subject() {
     Card {

@@ -90,7 +90,9 @@ Executable check for the common "load then render" pattern:
 
 ```kotlin verify
 // name: launched-effect-updates-ui
+// repeat: 3
 // assert: text = "loaded"
+// assert-not: text = "loading"
 @Composable
 fun Subject() {
     var data by remember { mutableStateOf("loading") }

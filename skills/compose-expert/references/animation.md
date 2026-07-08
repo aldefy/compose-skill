@@ -35,7 +35,9 @@ Controls appear/disappear animations with enter and exit transitions.
 
 ```kotlin verify
 // name: animated-visibility-renders-visible-content
+// repeat: 3
 // assert: text = "Hello!"
+// assert-not: text = "Goodbye!"
 @Composable
 fun Subject() {
 var visible by remember { mutableStateOf(true) }

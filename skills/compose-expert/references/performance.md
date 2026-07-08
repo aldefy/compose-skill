@@ -61,7 +61,9 @@ Executable check for a stable model rendered through a composable:
 
 ```kotlin verify
 // name: stable-model-renders-text
+// repeat: 3
 // assert: text = "Ada"
+// assert-not: text = "Bob"
 @Immutable
 data class Person(val name: String, val age: Int)
 

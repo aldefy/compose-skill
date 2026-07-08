@@ -6,7 +6,9 @@
 
 ```kotlin verify
 // name: material-theme-provides-tokens
+// repeat: 3
 // assert: text = "Uses MaterialTheme.typography.bodyLarge"
+// assert-not: text = "MaterialExpressiveTheme"
 @Composable
 fun Subject() {
     MaterialTheme(

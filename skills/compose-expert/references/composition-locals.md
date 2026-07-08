@@ -8,7 +8,9 @@ A CompositionLocal is a slot in the composition that holds a value accessible to
 
 ```kotlin verify
 // name: composition-local-provider-overrides-default
+// repeat: 3
 // assert: text = "Dark"
+// assert-not: text = "Light"
 val localAppTheme = compositionLocalOf { "Light" }
 
 @Composable

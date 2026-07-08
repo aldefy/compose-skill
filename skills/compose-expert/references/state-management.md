@@ -31,8 +31,10 @@ Both associate state with a composition key, but differ in persistence scope.
 
 ```kotlin verify
 // name: remember-counter-renders-clickable-state
+// repeat: 3
 // assert: text = "Count: 0"
 // assert: has-click-action = "Count: 0"
+// assert-not: text = "Count: 1"
 @Composable
 fun Subject() {
     var count by remember { mutableIntStateOf(0) }

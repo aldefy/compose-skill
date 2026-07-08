@@ -23,8 +23,10 @@ Executable smoke check for built-in button semantics:
 
 ```kotlin verify
 // name: button-text-exposes-click-action
+// repeat: 3
 // assert: text = "Click me"
 // assert: has-click-action = "Click me"
+// assert-not: text = "Delete"
 @Composable
 fun Subject() {
     Button(onClick = { }) { Text("Click me") }

@@ -21,13 +21,16 @@ abstract class GenerateClaimTests : DefaultTask() {
         out.deleteRecursively(); out.mkdirs()
 
         val tests = claims.joinToString("\n\n") { c ->
-            val asserts = c.asserts.joinToString("\n") { a -> emitAssertion(a) }
-            """
-            @Test fun `${c.name}`() {
-                rule.setContent { ClaimSubjects.`${c.name}`() }
-            $asserts
+            (1..c.repeatCount).joinToString("\n\n") { trial ->
+                val asserts = c.asserts.joinToString("\n") { a -> emitAssertion(a) }
+                val suffix = if (c.repeatCount == 1) "" else "_trial$trial"
+                """
+                @Test fun `${c.name}$suffix`() {
+                    rule.setContent { ClaimSubjects.`${c.name}`() }
+                $asserts
+                }
+                """.trimIndent()
             }
-            """.trimIndent()
         }
 
         val subjects = claims.joinToString("\n\n") { c ->
@@ -88,7 +91,10 @@ abstract class GenerateClaimTests : DefaultTask() {
         when (assertion.prop) {
             "width" -> "        rule.onRoot().assertWidthIsEqualTo(${assertion.value}.dp)"
             "height" -> "        rule.onRoot().assertHeightIsEqualTo(${assertion.value}.dp)"
-            "text" -> "        rule.onNodeWithText(\"${assertion.value.escapeKotlinString()}\").assertExists()"
+            "text" -> {
+                val call = if (assertion.negated) "assertDoesNotExist()" else "assertExists()"
+                "        rule.onNodeWithText(\"${assertion.value.escapeKotlinString()}\").$call"
+            }
             "has-click-action" ->
                 "        rule.onNodeWithText(\"${assertion.value.escapeKotlinString()}\").assertHasClickAction()"
             else -> error("unsupported assertion prop '${assertion.prop}'")
