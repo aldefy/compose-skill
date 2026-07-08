@@ -290,6 +290,35 @@ Scaffold(
 }
 ```
 
+Executable smoke check for the bottom bar semantics:
+
+```kotlin verify
+// name: bottom-navigation-renders-tab-labels
+// repeat: 3
+// assert: text = "Home"
+// assert: text = "Profile"
+// assert: content-description = "Home tab"
+// assert: content-description = "Profile tab"
+// assert-not: text = "Settings"
+@Composable
+fun Subject() {
+    NavigationBar {
+        NavigationBarItem(
+            selected = true,
+            onClick = {},
+            icon = { Box(Modifier.semantics { contentDescription = "Home tab" }) },
+            label = { Text("Home") }
+        )
+        NavigationBarItem(
+            selected = false,
+            onClick = {},
+            icon = { Box(Modifier.semantics { contentDescription = "Profile tab" }) },
+            label = { Text("Profile") }
+        )
+    }
+}
+```
+
 ## Shared Element Transitions
 
 ```kotlin

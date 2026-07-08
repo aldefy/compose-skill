@@ -9,9 +9,9 @@ object ClaimParser {
     private val nameLine = Regex("""^//\s*name:\s*([a-z0-9-]+)\s*$""")
     private val repeatLine = Regex("""^//\s*repeat:\s*(\d+)\s*$""")
     private val dpAssertLine = Regex("""^//\s*assert:\s*(width|height)\s*=\s*(\d+)\.dp\s*$""")
-    private val stringAssertLine = Regex("""^//\s*assert:\s*(text|has-click-action)\s*=\s*"([^"]+)"\s*$""")
-    private val stringNegativeAssertLine = Regex("""^//\s*assert-not:\s*(text)\s*=\s*"([^"]+)"\s*$""")
-    private val allowedProps = setOf("width", "height", "text", "has-click-action")
+    private val stringAssertLine = Regex("""^//\s*assert:\s*(text|has-click-action|content-description)\s*=\s*"([^"]+)"\s*$""")
+    private val stringNegativeAssertLine = Regex("""^//\s*assert-not:\s*(text|content-description)\s*=\s*"([^"]+)"\s*$""")
+    private val allowedProps = setOf("width", "height", "text", "has-click-action", "content-description")
 
     fun parse(markdown: String, sourceFile: String): List<Claim> {
         val lines = markdown.lines()
