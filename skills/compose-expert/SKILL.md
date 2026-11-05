@@ -55,7 +55,9 @@ lives here so it stays available to Claude after the skill loads.
 `A2UI`, `Agent-to-UI`, `material3-a2ui`, `A2uiCatalog`, `generative UI`,
 `Remote Compose`, `RemoteComposable`, `Wear Widget`, `MediaQuery`, `FlexBox`,
 `adaptive layout`, `trackpad`, `indirect input`, `Compose Glimmer`, `Subspace`,
-`Android XR`, `projected activity`, `Jetpack AppState`, `StateStore`, `Transform`.
+`Android XR`, `projected activity`, `Jetpack AppState`, `StateStore`, `Transform`,
+`AppFunctions`, `@AppFunctionDeclaration`, `AppFunctionService`,
+`AppFunctionManager`, `Android MCP`, `EXECUTE_APP_FUNCTIONS`.
 
 ### Android TV
 `tv-material`, `tv-foundation`, `Carousel`, `NavigationDrawer` (TV),
@@ -123,6 +125,7 @@ first, then cite `source-code/` for implementation proof when receipts matter.
 
 - **A2UI, Agent-to-UI, generative UI, component catalogs, `A2uiSurface`, agent-generated Compose UI** → `references/agentic-ui-a2ui.md`
 - **Remote Compose, `@RemoteComposable`, remote documents/players, Glance or Wear remote surfaces** → `references/remote-compose.md`
+- **AppFunctions, expose app actions to agents, Android MCP, `@AppFunctionDeclaration`, `AppFunctionService`, on-device tool calling** → `references/appfunctions.md`
 
 ### Navigation
 
@@ -237,6 +240,7 @@ Read the relevant reference file(s) from `references/` before answering:
 | Desktop (Window, Tray, MenuBar), iOS (UIKitView), Web (ComposeViewport) | `references/platform-specifics.md` |
 | Adaptive `MediaQuery`/`Grid`/`FlexBox`, keyboard, mouse, trackpad, indirect input | `references/adaptive-layout-input.md` |
 | A2UI and agent-generated native UI | `references/agentic-ui-a2ui.md` |
+| AppFunctions, agent tool calling, Android MCP | `references/appfunctions.md` |
 | Remote Compose and remote documents/players | `references/remote-compose.md` |
 | Modern graphics, mesh gradients, polygon shapes, blur | `references/graphics-modern.md` |
 | Android XR and Compose Glimmer | `references/xr-compose.md` |
