@@ -132,25 +132,25 @@ Scan the full file for each changed `@Composable` function.
 
 ### Category 2: Recomposition
 
-- [ ] **No unstable parameter types** without stability annotations:
-  - Plain `List<T>` — compiler infers as unstable. Use `@Immutable` data class wrapper,
-    `ImmutableList<T>` (kotlinx-collections-immutable), or annotate the call site
+- [ ] **Unstable parameters are intentional and measured:**
+  - Plain `List<T>` is unstable, but strong skipping can skip it when the same
+    instance is passed. Use immutable collections/wrappers when value equality
+    and the stability contract justify the change—not as a ritual annotation.
   - `HashMap`, `MutableMap`, any mutable collection — not stable
   - Non-`data` class without `@Stable` — compiler cannot infer stability
 
-- [ ] **Lambdas not created inline without `remember`.** A new lambda instance on every
-  recomposition of the parent prevents the child from being skipped.
+- [ ] **Lambda allocation matches the compiler mode.** With strong skipping
+  (default on Kotlin 2.0.20+), lambdas inside composition are remembered automatically.
   ```kotlin
-  // BAD — new lambda every parent recomposition
+  // Fine under default strong skipping.
   MyComposable(onClick = { doSomething() })
 
   // OK — stable reference
   val onClick = remember { { doSomething() } }
   MyComposable(onClick = onClick)
   ```
-  Exception: if strong skipping mode is enabled in the Compose compiler (`freeCompilerArgs +=
-  "-P", "plugin:androidx.compose.compiler.plugins.kotlin:experimentalStrongSkipping=true"`),
-  lambdas are stable by default.
+  Only add manual `remember` when supporting an older compiler mode or when
+  measurement shows a real allocation/identity issue.
 
 - [ ] **`derivedStateOf {}` used for computed values.** Flag values computed from state reads
   inside a composable body without `remember { derivedStateOf { ... } }`:

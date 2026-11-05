@@ -343,29 +343,18 @@ val locationState by locationFlow.collectAsStateWithLifecycle(
 
 ### Compose Multiplatform Consideration
 
-`collectAsStateWithLifecycle` is Android-only because it depends on `androidx.lifecycle`. In Compose Multiplatform (CMP) projects, use `collectAsState()` on non-Android targets and `collectAsStateWithLifecycle()` on Android via an `expect`/`actual` pattern:
+Current Compose Multiplatform lifecycle artifacts provide
+`collectAsStateWithLifecycle` in `commonMain`. Prefer it when a Lifecycle owner
+exists and collection should pause while inactive:
 
 ```kotlin
-// commonMain
-@Composable
-expect fun <T> Flow<T>.collectAsStateMultiplatform(
-    initial: T
-): State<T>
-
-// androidMain
-@Composable
-actual fun <T> Flow<T>.collectAsStateMultiplatform(
-    initial: T
-): State<T> = collectAsStateWithLifecycle(initialValue = initial)
-
-// iosMain / desktopMain / wasmJsMain
-@Composable
-actual fun <T> Flow<T>.collectAsStateMultiplatform(
-    initial: T
-): State<T> = collectAsState(initial = initial)
+// commonMain with org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose
+val state by flow.collectAsStateWithLifecycle(initialValue = initial)
 ```
 
-**Rule:** On Android, always use `collectAsStateWithLifecycle` for `StateFlow` and `SharedFlow`. Reserve `collectAsState` for Compose Multiplatform common code or non-lifecycle-aware contexts only.
+Use `collectAsState` where no lifecycle exists or continuous collection is an
+intentional requirement. Verify the lifecycle version supplied by the project's
+CMP release train.
 
 ---
 
@@ -522,22 +511,23 @@ LazyColumn {
 
 These rules prevent the most common state-related crashes and architectural mistakes in production Compose applications.
 
-### Rule 1: mutableStateOf ONLY in Composables, Never in ViewModels
+### Rule 1: Match the state primitive to its semantics
 
 ```kotlin
-// BAD: Compose state in ViewModel couples VM to Compose runtime
-class ProfileViewModel : ViewModel() {
-    var name by mutableStateOf("")  // Don't do this
-}
-
-// GOOD: Use coroutine-native state in ViewModel
+// StateFlow is a strong default for stream-oriented, non-Compose consumers.
 class ProfileViewModel : ViewModel() {
     private val _name = MutableStateFlow("")
     val name: StateFlow<String> = _name.asStateFlow()
 }
 ```
 
-ViewModels should expose `StateFlow` (via `MutableStateFlow` + `asStateFlow()`). Compose state (`mutableStateOf`) belongs in `@Composable` functions and state holder classes annotated with `@Stable`. This keeps ViewModels testable without the Compose runtime.
+Compose runtime state can legitimately live outside UI. Jetpack AppState
+officially supports snapshot state, headless `Transform` compositions, and
+application-scoped `StateStore` values in ViewModels and other layers. Prefer
+`StateFlow` where every stream operator/non-Compose consumer matters; prefer
+snapshot state when atomic snapshots and dynamic read tracking solve the actual
+problem. Keep mutation private and see `appstate.md` for lifecycle and event
+semantics.
 
 ### Rule 2: SharedFlow for Events, Not Channel
 

@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.5.0] - 2026-11-05
+
+### Added
+
+- **Android Dev Summit 2026 coverage**, reviewed from all 47 official per-talk
+  Markdown exports and checked against current AndroidX documentation.
+- New references for A2UI agent-generated native surfaces, state-based text
+  editing, Jetpack AppState, adaptive layouts and non-touch input, Remote
+  Compose, modern graphics, Android XR/Glimmer, Wear OS, and Media3 UI Compose.
+- Navigation 3 type-safe deep-link matching with `DeepLinkRequest`,
+  `UriDeepLinkMatcher`, custom serializers, match ranking, and synthetic stacks.
+- Compose Runtime 1.13 guidance for `computedStateOf` and recomposition tracing,
+  with prerelease gates.
+
+### Changed
+
+- Updated Compose Multiplatform guidance for common previews, stable
+  multiplatform Navigation 3, lifecycle-aware collection, Room KMP, desktop
+  Window/Dialog state v2, iOS native text input, and concurrent rendering.
+- Replaced the blanket ban on Compose state in ViewModels with a decision based
+  on snapshot-state versus stream semantics and Jetpack AppState lifecycle.
+- Updated strong-skipping guidance for the Kotlin Compose compiler plugin and
+  removed obsolete `kotlinCompilerExtensionVersion` configuration.
+- Expanded skill routing and README coverage for the new reference surface.
+
 ## [2.4.0] - 2026-07-08
 
 ### Added

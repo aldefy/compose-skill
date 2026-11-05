@@ -41,7 +41,7 @@ AI coding tools generate Compose code that compiles but gets the details wrong. 
 
 This skill fixes that by giving your AI assistant two things:
 
-1. **24 reference guides** covering every major Compose topic — including Compose Multiplatform, Android TV, Material 3 motion, atomic design systems, design-to-code workflows, animation recipes, Paging 3 (core / offline-first / MVI + testing), Nav 2 → Nav 3 migration, and production crash patterns
+1. **35 reference guides** covering every major Compose topic — including Compose Multiplatform, A2UI, AppState, Remote Compose, adaptive layouts and input, Android XR, Wear OS, Media3, Android TV, Material 3 motion, Paging 3, Nav 2 → Nav 3 migration, and production crash patterns
 2. **6 source code files** pulled directly from [`androidx/androidx`](https://github.com/androidx/androidx/tree/androidx-main/compose) and [`compose-multiplatform-core`](https://github.com/JetBrains/compose-multiplatform-core) so the agent can check how things actually work
 
 ## What changes when you install it
@@ -84,6 +84,13 @@ This skill fixes that by giving your AI assistant two things:
 | **Atomic design** | 5-level hierarchy (tokens, atoms, molecules, organisms, templates) mapped to Compose, M3 wrapper patterns, custom atom patterns, slot API contracts, token layer, anti-patterns |
 | **Paging 3** | `PagingSource`, `Pager`, `PagingConfig`, `LazyPagingItems`, `LoadState` UI handling, `flatMapLatest` for filter changes, `RemoteMediator` offline-first, MVI dual-flow pattern, `asSnapshot`/`TestPager`, full anti-pattern table |
 | **Nav 2 → Nav 3 migration** | Conceptual shifts (you own the back stack), mechanical migration steps (`NavKey`, `rememberNavBackStack`, `NavDisplay`, entry-scoped ViewModels, deep-link parsing), original "Choosing Nav 2 vs Nav 3" decision guide with the CMP 1.10+ polymorphic-serialisation caveat |
+| **A2UI** | Catalog capability boundaries, message processors, native agent-generated surfaces, progressive rendering, testing and security |
+| **AppState** | Headless `Transform`, `listener`, `StateStore`, DataStore persistence, and choosing between snapshot state and Flow |
+| **Adaptive layouts and input** | `MediaQuery`, `Grid`, `FlexBox`, Navigation 3 scenes, keyboard, mouse, trackpad, and indirect input |
+| **Remote Compose** | Remote documents and players, capability profiles, expressions, Glance and Wear Widgets |
+| **Modern graphics** | Mesh gradients, wide gamut, polygon morphs, progressive/backdrop blur, and graphics performance |
+| **Android XR and Wear** | Compose Glimmer, projected activities, spatial UI, XR accessibility, Wear Material 3 and Wear Widgets |
+| **Media3 Compose** | Player ownership, customizable Compose controls, Cast handoff, lifecycle and form-factor input |
 | Source code | Actual `.kt` from `androidx/androidx` and `compose-multiplatform-core` for runtime, UI, foundation, material3, navigation, CMP |
 
 ## How it works
@@ -114,7 +121,7 @@ You ask about Compose
               +-- ... (6 source files)
 ```
 
-**Layer 1: guidance docs** (24 files) — practical references with patterns, pitfalls, and do/don't examples. The skill's `## Quick Routing` section maps task signals to a single file so the agent lands on the right reference in one read.
+**Layer 1: guidance docs** (35 files) — practical references with patterns, pitfalls, and do/don't examples. The skill's `## Quick Routing` section maps task signals to a single file so the agent lands on the right reference in one read.
 
 **Layer 2: source code receipts** (6 files) — the actual Kotlin source from `androidx/androidx` and `compose-multiplatform-core`. When the agent needs to verify an implementation detail rather than guess, it reads these.
 
@@ -145,6 +152,15 @@ skills/compose-expert/
     ├── production-crash-playbook.md     # Crash patterns, defensive coding, production rules
     ├── multiplatform.md                 # CMP architecture, expect/actual, Res.*, migration
     ├── platform-specifics.md            # Desktop, iOS, Web/WASM platform APIs and gotchas
+    ├── agentic-ui-a2ui.md               # A2UI catalogs, surfaces, events, safety
+    ├── appstate.md                      # Transform, listener, StateStore
+    ├── text-editing.md                  # TextFieldState and transformations
+    ├── adaptive-layout-input.md         # MediaQuery, Grid/FlexBox, non-touch input
+    ├── remote-compose.md                # Remote documents, players, Glance/Wear
+    ├── graphics-modern.md               # Mesh gradients, shapes, blur, wide gamut
+    ├── xr-compose.md                    # Glimmer, projected and spatial UI
+    ├── wear-compose.md                  # Wear Material 3 and Wear Widgets
+    ├── media3-compose.md                # Media3 UI Compose and player lifecycle
     ├── tv-compose.md                    # Android TV: tv-material, Carousel, focus, D-pad
     ├── atomic-design.md                 # Atomic design system: tokens, atoms, molecules, organisms, templates
     └── source-code/                      # Actual .kt source
