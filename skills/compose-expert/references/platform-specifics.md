@@ -2,6 +2,9 @@
 
 Compose Multiplatform shares most UI code across platforms, but entry points, interop APIs, and runtime behavior differ significantly. This reference covers what you need to know per platform.
 
+> Version baseline reviewed 2026-11-05: Compose Multiplatform 1.12.x stable;
+> 1.13 prerelease. Gate prerelease APIs explicitly.
+
 ---
 
 ## 1. Desktop (JVM)
@@ -40,6 +43,12 @@ fun main() {
 ### Window Composable
 
 `Window` is the top-level container. Key parameters:
+
+Compose Multiplatform 1.12 also provides an experimental Window/Dialog state v2
+under `androidx.compose.ui.window.v2`. It separates requested bounds from actual
+window state and supports screen selection, intrinsic sizing, min/max sizes,
+and parent-relative dialog positioning. Keep v1 examples for stable production
+code unless the project explicitly opts into v2.
 
 | Parameter | Type | Default | Purpose |
 |-----------|------|---------|---------|
@@ -277,7 +286,7 @@ struct ComposeView: UIViewControllerRepresentable {
 fun MainViewController(): UIViewController = ComposeUIViewController(
     configure = {
         opaque = true               // true = opaque background (better perf), false = transparent
-        parallelRendering = false    // experimental: parallel rendering pipeline
+        // Concurrent rendering is enabled by default in CMP 1.11+.
         onFocusBehavior = OnFocusBehavior.FocusableAboveKeyboard  // auto-scroll focused field above keyboard
     }
 ) {
@@ -327,6 +336,12 @@ val uiView = LocalUIView.current
 ```
 
 ### Key Gotchas
+
+**Native text input is experimental (CMP 1.11+):**
+The opt-in UIKit-backed text input path improves caret placement, selection
+gestures, system context menus, autofill, translation, and search. Keep the
+default cross-platform path when consistency or stability is more important,
+and test both paths before adopting it.
 
 **DisposableEffect cleanup unreliable with UINavigationController:**
 `DisposableEffect.onDispose` may not fire when a Compose screen is popped from a `UINavigationController`. Do not rely on it for critical cleanup (e.g., releasing resources, stopping location updates). Use ViewModel `onCleared()` or explicit lifecycle observation instead.

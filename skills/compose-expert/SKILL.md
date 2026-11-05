@@ -12,7 +12,7 @@ description: >
   session_start. Backed by actual androidx/androidx and JetBrains/compose-multiplatform-core
   source receipts. See "## When this skill applies" in SKILL.md for the full trigger
   surface.
-version: 2.4.0
+version: 2.5.0
 ---
 
 > **Installation notice:** This skill is now distributed as a plugin.
@@ -40,12 +40,22 @@ lives here so it stays available to Claude after the skill loads.
 `styleable`, `MutableStyleState`, `Material 3 Expressive`, `M3 Expressive`,
 `MaterialExpressiveTheme`, `ButtonGroup`, `SplitButton`,
 `FloatingActionButtonMenu`, `LoadingIndicator`, `HorizontalFloatingToolbar`,
-`NavDisplay`, `NavKey`, `rememberNavBackStack`, `NavigableListDetailPaneScaffold`.
+`NavDisplay`, `NavKey`, `rememberNavBackStack`, `NavigableListDetailPaneScaffold`,
+`TextFieldState`, `InputTransformation`, `OutputTransformation`, `computedStateOf`,
+`MediaQuery`, `Grid`, `FlexBox`, `A2uiSurface`, `StateStore`, `RemoteCompose`,
+`MeshGradientPainter`, `PolygonShape`, `MorphPolygonShape`.
 
 ### Compose Multiplatform / KMP
 `Compose Multiplatform`, `CMP`, `KMP`, `commonMain`, `expect`, `actual`,
 `ComposeUIViewController`, `Window` composable, `UIKitView`, `ComposeViewport`,
-`Res.drawable`, `Res.string`, `SkikoMain`.
+`Res.drawable`, `Res.string`, `SkikoMain`, `Compose Hot Reload`, `WindowState v2`,
+`native text input`, `awaitPendingResourceStateLoads`.
+
+### Agentic, remote, adaptive, and spatial UI
+`A2UI`, `Agent-to-UI`, `material3-a2ui`, `A2uiCatalog`, `generative UI`,
+`Remote Compose`, `RemoteComposable`, `Wear Widget`, `MediaQuery`, `FlexBox`,
+`adaptive layout`, `trackpad`, `indirect input`, `Compose Glimmer`, `Subspace`,
+`Android XR`, `projected activity`, `Jetpack AppState`, `StateStore`, `Transform`.
 
 ### Android TV
 `tv-material`, `tv-foundation`, `Carousel`, `NavigationDrawer` (TV),
@@ -92,18 +102,27 @@ first, then cite `source-code/` for implementation proof when receipts matter.
 - **`LaunchedEffect`, `SideEffect`, `DisposableEffect`, `rememberUpdatedState`, `rememberCoroutineScope`** → `references/side-effects.md`
 - **Recomposition frequency, "my screen recomposes too often", stability, `@Stable`/`@Immutable`, Compose compiler metrics, baseline profiles, strong skipping** → `references/performance.md`
 - **`CompositionLocal`, ambient values, theming propagation, `LocalContext` misuse, custom locals** → `references/composition-locals.md`
+- **Compose state outside UI, AppState `Transform`, `listener`, `StateStore`, DataStore state persistence** → `references/appstate.md`
 
 ### Animation and motion
 
 - **`animate*AsState`, `AnimatedVisibility`, `Crossfade`, `updateTransition`, `Animatable`, `rememberInfiniteTransition`** → `references/animation.md`
 - **Shared element transitions, gesture-driven animation, `Modifier.graphicsLayer`, Canvas drawing, custom motion spec** → `references/animation.md` (secondary: `references/modifiers.md` for `graphicsLayer`)
 - **M3 motion tokens, `MotionTokens`, `MotionScheme`, animation duration tokens, M3 easing curves** → `references/material3-motion.md`
+- **Mesh gradients, wide gamut, polygon/morph shapes, progressive or backdrop blur, modern draw effects** → `references/graphics-modern.md`
 
 ### Layout, lists, modifiers
 
 - **`LazyColumn`, `LazyRow`, `LazyVerticalGrid`, `LazyHorizontalGrid`, `key`/`itemKey`, `contentType`, `LazyListState`, scroll state, sticky headers** → `references/lists-scrolling.md`
 - **`HorizontalPager`, `VerticalPager`, `PagerState`** → `references/lists-scrolling.md`
 - **Modifier chain ordering, custom layout, `Layout`, `SubcomposeLayout`, layout modifier, draw modifier, `Painter`, `Modifier.Node`** → `references/modifiers.md`
+- **Adaptive layout, `MediaQuery`, `Grid`, `FlexBox`, keyboard/mouse/trackpad, indirect input, input testing** → `references/adaptive-layout-input.md`
+- **`TextFieldState`, `TextFieldBuffer`, `InputTransformation`, `OutputTransformation`, rich text editing** → `references/text-editing.md`
+
+### Agentic and remote UI
+
+- **A2UI, Agent-to-UI, generative UI, component catalogs, `A2uiSurface`, agent-generated Compose UI** → `references/agentic-ui-a2ui.md`
+- **Remote Compose, `@RemoteComposable`, remote documents/players, Glance or Wear remote surfaces** → `references/remote-compose.md`
 
 ### Navigation
 
@@ -132,6 +151,9 @@ first, then cite `source-code/` for implementation proof when receipts matter.
 - **iOS/Desktop/Web CMP targets, `expect`/`actual`, `commonMain`, `Res.drawable`, `Res.string`, platform-specific composables** → `references/multiplatform.md`
 - **`ComposeUIViewController` (iOS), `Window`/`Tray`/`MenuBar` (Desktop), `UIKitView`, `ComposeViewport` (Web), platform interop** → `references/platform-specifics.md`
 - **TV Compose, `androidx.tv`, D-pad focus, `FocusRequester` on TV, `Carousel`, `NavigationDrawer` (TV), 10-foot UI, leanback migration** → `references/tv-compose.md`
+- **Wear OS Compose, Wear Material 3, `TransformingLazyColumn`, Wear Widgets, notification bridging** → `references/wear-compose.md`
+- **Android XR, Compose Glimmer, projected activities, Subspace, spatial panels, embedded 3D engines** → `references/xr-compose.md`
+- **Media3 UI Compose, ExoPlayer ownership, player controls, CastPlayer** → `references/media3-compose.md`
 
 ### Interop and accessibility
 
@@ -195,7 +217,9 @@ Read the relevant reference file(s) from `references/` before answering:
 | Topic | Reference File |
 |-------|---------------|
 | `@State`, `remember`, `mutableStateOf`, state hoisting, `derivedStateOf`, `snapshotFlow` | `references/state-management.md` |
+| AppState `Transform`, `listener`, `StateStore`, Compose state outside UI | `references/appstate.md` |
 | Structuring composables, slots, extraction, preview | `references/view-composition.md` — for design system structure, also see `references/atomic-design.md` |
+| `TextFieldState`, input/output transformations, rich text editing | `references/text-editing.md` |
 | Modifier ordering, custom modifiers, `Modifier.Node` | `references/modifiers.md` |
 | `LaunchedEffect`, `DisposableEffect`, `SideEffect`, `rememberCoroutineScope` | `references/side-effects.md` |
 | `CompositionLocal`, `LocalContext`, `LocalDensity`, custom locals | `references/composition-locals.md` |
@@ -211,6 +235,13 @@ Read the relevant reference file(s) from `references/` before answering:
 | Production crash patterns, defensive coding, state/performance rules | `references/production-crash-playbook.md` |
 | Compose Multiplatform, `expect`/`actual`, resources (`Res.*`), migration | `references/multiplatform.md` |
 | Desktop (Window, Tray, MenuBar), iOS (UIKitView), Web (ComposeViewport) | `references/platform-specifics.md` |
+| Adaptive `MediaQuery`/`Grid`/`FlexBox`, keyboard, mouse, trackpad, indirect input | `references/adaptive-layout-input.md` |
+| A2UI and agent-generated native UI | `references/agentic-ui-a2ui.md` |
+| Remote Compose and remote documents/players | `references/remote-compose.md` |
+| Modern graphics, mesh gradients, polygon shapes, blur | `references/graphics-modern.md` |
+| Android XR and Compose Glimmer | `references/xr-compose.md` |
+| Wear OS Compose and Wear Widgets | `references/wear-compose.md` |
+| Media3 UI Compose | `references/media3-compose.md` |
 | TV Compose: Surface, Carousel, NavigationDrawer, Cards, focus, D-pad | `references/tv-compose.md` |
 | M3 motion tokens, `MotionTokens`, `MotionScheme`, animation duration, easing | `references/material3-motion.md` |
 | PR URL, code review, "review this PR", "what's wrong with this" | `references/pr-review.md` |

@@ -236,10 +236,12 @@ class UserViewModel {
 }
 ```
 
-**Pitfall:** Not annotating data classes used as parameters. Unannotated types are assumed unstable, triggering unnecessary recompositions.
+Do not add stability annotations reflexively. The compiler can infer many
+immutable types, and strong skipping can skip unstable parameters by identity.
+Annotate only when the type actually satisfies the documented contract.
 
 ```kotlin
-// ❌ Treated as unstable, causes recomposition
+// May be unstable; measure before changing it.
 class Config(val title: String, val color: Color)
 
 // ✅ Properly annotated
@@ -249,24 +251,19 @@ class Config(val title: String, val color: Color)
 
 ## Strong Skipping Mode
 
-In Compose 1.6+, strong skipping mode applies stricter recomposition logic.
+Strong skipping is enabled by default with Kotlin 2.0.20 and newer.
 
 **What changed:**
-- Composables skip recomposition if *all* parameters have unchanged identity and value
-- Unannotated parameter types are treated as unstable (always recompose)
-- `@Stable` and `@Immutable` annotations are now critical for performance
-- Lambda parameters always cause recomposition (they're new instances)
-
-**Enable strong skipping:**
-```gradle
-composeOptions {
-    kotlinCompilerExtensionVersion = "1.5.4+"  // enables by default
-}
-```
+- Stable parameters are compared with object equality; unstable parameters use
+  instance equality.
+- Lambdas created inside composition are remembered automatically.
+- Skipping still has comparison/bookkeeping cost; first avoid invalidations.
+- The Kotlin Compose compiler plugin version must match Kotlin. Do not configure
+  the obsolete `kotlinCompilerExtensionVersion` property in modern projects.
 
 **Practical impact:**
 ```kotlin
-// ❌ These create new instances, always recompose child
+// New unstable instances cannot be skipped by identity.
 @Composable
 fun Parent() {
     Child(title = buildString { append("Title") })
@@ -285,7 +282,7 @@ fun Parent() {
 
 ## State in ViewModels: StateFlow vs Compose State
 
-### StateFlow (Recommended for ViewModel)
+### StateFlow (strong default for ViewModels)
 - Survives composition recomposition and configuration changes
 - Works with lifecycle (`collectAsStateWithLifecycle`)
 - Thread-safe, works across layers
@@ -308,10 +305,11 @@ fun UserScreen(viewModel: UserViewModel) {
 }
 ```
 
-### Compose State (For UI-only state)
-- Use for temporary, UI-local state
-- Don't hoist to ViewModel
-- Lost on back navigation
+### Compose State
+- Use `remember` for temporary UI-local state; it is lost when that composition leaves.
+- Snapshot state may also live in a testable state holder or ViewModel when
+  atomic snapshots/dynamic read tracking are required; see `appstate.md`.
+- Keep mutation private regardless of the state primitive.
 
 ```kotlin
 @Composable
@@ -487,15 +485,10 @@ This pattern (used by `rememberScrollState`, `rememberDrawerState`, etc.) groups
 
 ## Production State Rules
 
-### 1. mutableStateOf ONLY in composables, never in ViewModels
+### 1. Choose state semantics deliberately in ViewModels
 
 ```kotlin
-// BAD: Compose state in ViewModel couples VM to Compose runtime
-class MyViewModel : ViewModel() {
-    var name by mutableStateOf("") // Don't do this
-}
-
-// GOOD: StateFlow in ViewModel — framework-agnostic, testable
+// Flow is a strong default when non-Compose consumers or stream operators matter.
 class MyViewModel : ViewModel() {
     private val _name = MutableStateFlow("")
     val name = _name.asStateFlow()
@@ -503,6 +496,12 @@ class MyViewModel : ViewModel() {
     fun updateName(new: String) { _name.value = new }
 }
 ```
+
+Compose runtime state is also supported outside UI. Jetpack AppState provides
+`Transform` and `StateStore` for ViewModels, repositories, managers, and
+services. Use snapshot state when its atomic snapshots or dynamic read tracking
+provide a concrete benefit; keep mutations private and test the state holder.
+See `appstate.md`. Do not enforce a blanket ban on `mutableStateOf` in ViewModels.
 
 ### 2. SharedFlow for one-shot events, NOT Channel
 

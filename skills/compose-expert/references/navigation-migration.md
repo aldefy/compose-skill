@@ -79,10 +79,12 @@ val sharedViewModel: CheckoutViewModel = hiltViewModel(parentEntry)
 val sharedViewModel: CheckoutViewModel = viewModel() // Activity-scoped
 ```
 
-### 5. Parse deep links yourself
+### 5. Match deep links into navigation keys
 
-Nav 3 does not parse deep links. Parse the URI in your platform entry point
-(Activity, scene delegate, etc.) and construct the back stack manually:
+The application still receives the platform deep link at its entry point, but
+current Navigation 3 provides KMP-compatible matching APIs. Wrap the input in a
+`DeepLinkRequest`, match it with a `UriDeepLinkMatcher`, and turn the result into
+application-owned back-stack state:
 
 ```kotlin
 // Nav 2
@@ -91,13 +93,28 @@ composable<Detail>(
 ) { /* ... */ }
 
 // Nav 3
-LaunchedEffect(deepLinkId) {
-    if (deepLinkId != null) {
-        backStack.clear()
-        backStack.addAll(listOf(Home, Detail(deepLinkId)))
-    }
-}
+@Serializable
+data class Detail(val id: String) : NavKey
+
+val matcher = UriDeepLinkMatcher(
+    uriPattern = DeepLinkUri("example.com/detail/{id}"),
+    serializer = serializer<Detail>(),
+)
+
+val match = matcher.match(DeepLinkRequest(uri = incomingUri))
+val initialBackStack = listOf(match?.key ?: Home)
 ```
+
+Use one matcher per supported pattern. If several match, select
+`matches.maxOrNull()`; match results rank more specific patterns. Use custom
+`DeepLinkSerializer` implementations for non-primitive arguments and subclass
+the matcher only when preprocessing cannot be expressed by a serializer.
+
+`withBackStack` can lazily construct a synthetic parent stack for a successful
+match, preserving expected system-back behavior. Contribute matchers from
+feature modules through DI rather than centralizing every pattern in the app
+module. Verify exact artifact/API names against the project's Navigation 3
+version because these APIs are newer than the original 1.0 release.
 
 ### 6. Replace tab navigation
 

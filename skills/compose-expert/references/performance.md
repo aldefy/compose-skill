@@ -99,30 +99,24 @@ fun PersonCard(person: Person) {
 
 ## Strong Skipping Mode (Default)
 
-Android Gradle Plugin 8.0+ and Compose compiler 1.5.0+ enable **strong skipping mode**. This changes how lambdas are treated:
-
-Without strong skipping, every lambda is unstable. With it enabled:
-- Lambdas become stable if all captured variables are stable
-- Fewer unnecessary recompositions
+Strong skipping is enabled by default with Kotlin 2.0.20 and newer. Restartable
+composables with unstable parameters can be skipped using instance equality,
+and lambdas inside composition are remembered automatically.
 
 ```kotlin
-// With strong skipping: lambda is stable if count is stable
+// The lambda is remembered automatically under strong skipping.
 @Composable
 fun Counter(count: Int) {
-    Button(onClick = { println(count) }) {  // Stable lambda
+    Button(onClick = { println(count) }) {
         Text("Count: $count")
     }
 }
 ```
 
-Check `build.gradle.kts`:
-```kotlin
-android {
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.0"
-    }
-}
-```
+Do not add obsolete `kotlinCompilerExtensionVersion` configuration to modern
+Kotlin projects. Use the Kotlin Compose compiler Gradle plugin matching the
+Kotlin version. Skipping still has parameter-comparison and bookkeeping cost;
+avoiding unnecessary invalidations is often better than forcing stability.
 
 ---
 
@@ -182,6 +176,23 @@ fun SearchResults(items: List<Item>, query: String) {
 ```
 
 `derivedStateOf` deduplicates downstream recompositions — two different filters yielding the same list trigger only one downstream recomposition.
+
+### computedStateOf (Compose Runtime 1.13+)
+
+`computedStateOf` also invalidates observers only when its result changes, but it
+recalculates on every read instead of maintaining a cached derived value. It can
+be cheaper for small predicates that are read once after frequent writes.
+
+```kotlin
+val showScrollToTop by remember {
+    computedStateOf { scrollState.value > 0 }
+}
+```
+
+Use `derivedStateOf` when repeated reads benefit from caching or the calculation
+allocates/is expensive. Use `computedStateOf` for cheap calculations dominated
+by read-after-write invalidation cost. Runtime 1.13 is prerelease as of this
+reference update, so gate the API on the project's dependency channel.
 
 ---
 
@@ -515,7 +526,10 @@ fun ExpensiveScreen() {
 }
 ```
 
-Enables identifying slow composables in production profiling without adding logging.
+Composition tracing identifies how long composables take. Compose Runtime 1.13
+adds recomposition tracing, which records state reads/writes and call stacks that
+caused recomposition in Perfetto. Use it to find the invalidation source before
+adding `remember`, annotations, or derived state.
 
 ---
 

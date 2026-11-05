@@ -754,7 +754,10 @@ private fun ConversationRowPreview(
 }
 ```
 
-**CMP note:** In `commonMain`, use `@Preview` from `org.jetbrains.compose.ui.tooling.preview`. Device-specific previews (`Devices.TABLET`) are Android-only.
+**CMP note:** In CMP 1.10+, use the common
+`androidx.compose.ui.tooling.preview.Preview` annotation from `commonMain`.
+Older JetBrains preview annotations are deprecated. Device-specific preview
+parameters such as `Devices.TABLET` remain Android tooling features.
 
 ## Adaptive Layouts
 

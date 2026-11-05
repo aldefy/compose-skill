@@ -113,33 +113,11 @@ fun main() {
 
 ## expect/actual Patterns
 
-### Pattern 1: isSystemInDarkTheme()
+### Pattern 1: Prefer common APIs before expect/actual
 
-The theme detection API is `expect` in commonMain with platform-specific implementations.
-
-```kotlin
-// commonMain
-@Composable
-expect fun isSystemInDarkTheme(): Boolean
-```
-
-```kotlin
-// skikoMain (Desktop, iOS, Web shared actual)
-@Composable
-actual fun isSystemInDarkTheme(): Boolean {
-    val systemTheme = LocalSystemTheme.current
-    return systemTheme == SystemTheme.Dark
-}
-```
-
-```kotlin
-// androidMain
-@Composable
-actual fun isSystemInDarkTheme(): Boolean {
-    val uiMode = LocalContext.current.resources.configuration.uiMode
-    return (uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
-}
-```
+`isSystemInDarkTheme()` is available from common Compose UI. Call it directly
+from `commonMain`; do not recreate platform `actual` implementations. Reach for
+`expect`/`actual` only when the required capability has no common API.
 
 ### Pattern 2: ResourceReader
 
@@ -361,12 +339,12 @@ stringResource(Res.string.greeting)
 |-------------|-----------------|-------|
 | Hilt (`hiltViewModel()`) | Koin (`koinViewModel()`) | Koin has first-class KMP support. Koin 4.0+ has Compose annotations. |
 | Retrofit | Ktor Client | Ktor has multiplatform HTTP engines per platform. |
-| Room | SQLDelight | SQLDelight generates Kotlin from SQL. Room KMP is experimental (2.7.0-alpha). |
+| Room Android | Room KMP or SQLDelight | Room 2.7+ supports KMP; compare target coverage and migration cost. |
 | Coil 2.x | Coil 3.x KMP | Coil 3.0+ is fully multiplatform. Same API. |
 | Lottie | Kottie / Compottie | See Lottie gotcha above. |
 | `R.drawable.*`, `R.string.*` | `Res.drawable.*`, `Res.string.*` | Compose Resources replaces Android resources. |
-| `collectAsStateWithLifecycle()` | `collectAsState()` | `collectAsState()` is available in commonMain. Lifecycle-awareness is Android-specific. |
-| `BackHandler` | `expect`/`actual` | Implement back handling per platform. Desktop/iOS have different back concepts. |
+| Android lifecycle collection | Multiplatform lifecycle | Current `lifecycle-runtime-compose` provides common lifecycle-aware collection. |
+| Android back handling | Navigation 3 / Navigation Event or platform adapter | Model back as navigation state; use platform hooks only at the edge. |
 | `LocalContext.current` | `expect`/`actual` | No universal replacement. Abstract platform needs behind an interface. |
 
 ### Top 5 Migration Pitfalls
@@ -459,9 +437,9 @@ CMP has strict version compatibility requirements. Mismatched versions produce c
 ```kotlin
 // build.gradle.kts -- versions must be compatible
 plugins {
-    kotlin("multiplatform") version "2.1.20"             // Kotlin version
-    id("org.jetbrains.compose") version "1.8.0"          // CMP plugin version
-    id("org.jetbrains.kotlin.plugin.compose") version "2.1.20" // Must match Kotlin
+    kotlin("multiplatform") version libs.versions.kotlin.get()
+    id("org.jetbrains.compose") version libs.versions.composeMultiplatform.get()
+    id("org.jetbrains.kotlin.plugin.compose") version libs.versions.kotlin.get()
 }
 
 // Check compatibility at:
@@ -501,17 +479,14 @@ fun AppNavigation() {
 
 **Deep link handling differs per platform.** On Android, deep links integrate with `Intent` and `AndroidManifest.xml`. On other platforms, deep links must be wired manually (e.g., custom URL scheme on iOS via `application(_:open:options:)`, browser URL on Web).
 
-### Navigation 3 (Experimental -- CMP 1.10+)
+### Navigation 3 (Stable multiplatform support)
 
-Navigation 3 is a ground-up redesign. `navigation3-common` is multiplatform, but `navigation3-ui` is not yet fully KMP.
-
-```kotlin
-// Available in CMP 1.10+ (experimental)
-// navigation3-common: multiplatform
-// navigation3-ui: limited platform support (check release notes)
-```
-
-Wait for stable releases before using in production multiplatform projects.
+Navigation 3 is a Compose-first navigation model where the application owns the
+back stack. Compose Multiplatform distributes stable Navigation 3 artifacts for
+non-Android targets. Prefer it for new shared-UI projects that benefit from
+explicit back-stack state, scenes, and KMP deep-link matching. Check the current
+CMP release table because Navigation 3 versions do not equal the CMP plugin
+version.
 
 ### Voyager (Third-Party)
 
@@ -602,19 +577,17 @@ fun ProfileScreen() {
 }
 ```
 
-### Don't: Use @Preview from the wrong package in commonMain
+### Use the common Preview annotation
 
 ```kotlin
-// Will not compile in commonMain
-import androidx.compose.ui.tooling.preview.Preview  // Android-only package!
+// commonMain (CMP 1.10+)
+import androidx.compose.ui.tooling.preview.Preview
 
 @Preview
 @Composable
 fun MyPreview() { /* ... */ }
 
-// CMP preview support varies by IDE and target
-// Use Android Studio previews in androidMain only
-// For Desktop, run the app directly (hot reload is fast)
+// IDE rendering support still varies by host and target.
 ```
 
 ### Don't: Use R.* in shared code
@@ -629,17 +602,14 @@ Image(painter = painterResource(Res.drawable.icon), contentDescription = null)
 Text(stringResource(Res.string.title))
 ```
 
-### Don't: Assume collectAsStateWithLifecycle exists in commonMain
+### Lifecycle-aware collection in commonMain
 
 ```kotlin
-// Will not compile in commonMain
-val state by viewModel.uiState.collectAsStateWithLifecycle()  // Android-only!
-
-// Use collectAsState() instead -- available everywhere
-val state by viewModel.uiState.collectAsState()
-
-// collectAsState() is sufficient for CMP. The lifecycle awareness of
-// collectAsStateWithLifecycle() is an Android optimization that stops
-// collection when the app is backgrounded. On Desktop/Web this is
-// unnecessary; on iOS, CMP handles lifecycle automatically.
+// lifecycle-runtime-compose is multiplatform in current CMP releases.
+val state by viewModel.uiState.collectAsStateWithLifecycle()
 ```
+
+Use `collectAsState()` when no Lifecycle owner exists or continuous collection
+is intentional. Do not assume iOS/Web background collection is harmless; choose
+collection semantics explicitly and verify the lifecycle artifact version in
+the current CMP release table.
