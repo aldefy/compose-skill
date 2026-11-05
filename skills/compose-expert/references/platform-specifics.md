@@ -7,6 +7,45 @@ Compose Multiplatform shares most UI code across platforms, but entry points, in
 
 ---
 
+## Android desktop-class devices (Googlebook)
+
+Googlebook runs Android apps in a desktop windowing environment. This is
+Android, not Compose Desktop/JVM: keep Android lifecycle, permissions, and
+Android APIs, but design for resizable windows and non-touch input.
+
+```kotlin
+@Composable
+fun GooglebookAdaptiveScreen() {
+    val windowSize = currentWindowAdaptiveInfo().windowSizeClass
+    val expanded = windowSize.widthSizeClass == WindowWidthSizeClass.Expanded
+
+    if (expanded) {
+        Row(Modifier.fillMaxSize()) {
+            NavigationRail()
+            ContentPane(Modifier.weight(1f))
+        }
+    } else {
+        CompactContent()
+    }
+}
+```
+
+Use window capabilities, not `Build.MODEL`, to choose layout. Preserve state
+across resize and configuration changes. Support keyboard focus and shortcuts,
+mouse/trackpad hover and pointer affordances, tooltips, and drag-and-drop when
+these match the workflow. Keep semantics and touch input intact for hybrid
+hardware.
+
+For Googlebook and other large-screen Android targets, test resizable windows,
+split-screen, multi-window, multi-display, external displays, and state
+restoration. The adaptive quality matrix includes Googlebook, foldables,
+tablets, and Chromebook-sized configurations; target at least Tier 2 (Adaptive
+optimized) before calling the experience desktop-ready.
+
+Do not confuse this target with Compose Desktop below. `Window`, `Tray`, and
+Swing/AWT interop are JVM desktop APIs; they do not replace Android windowing
+and lifecycle APIs on Googlebook.
+
 ## 1. Desktop (JVM)
 
 ### Entry Points
