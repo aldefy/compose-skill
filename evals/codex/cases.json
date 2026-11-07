@@ -1,0 +1,84 @@
+{
+  "_doc": "gate=true cases fail the run when below min_pass_rate. gate=false cases are measured and compared to a baseline but never fail the run on their own. expect_skill: true means a completed command must have read compose-expert/SKILL.md. expect_refs_any: at least one of these references must be read by a completed command. findings: every regex (case-insensitive) must match the final answer. forbid_skill: true means the skill must NOT be read.",
+  "cases": [
+    {
+      "id": "explicit_shader",
+      "mode": "explicit",
+      "gate": true,
+      "min_pass_rate": 1.0,
+      "prompt": "Use the compose-expert skill. Review shared/src/androidMain/kotlin/demo/Shimmer.android.kt. Is the shader usage correct and safe on all devices? Do not modify files.",
+      "expect_skill": true,
+      "expect_refs_any": ["agsl-shaders.md", "graphics-modern.md"],
+      "findings": ["(33|tiramisu|api level|api-gated|version)", "(every (frame|draw)|per[- ]frame|each (frame|draw)|cache|remember|drawWithCache|allocat)"]
+    },
+    {
+      "id": "explicit_lazy_keys",
+      "mode": "explicit",
+      "gate": true,
+      "min_pass_rate": 1.0,
+      "prompt": "Use the compose-expert skill. Review shared/src/commonMain/kotlin/demo/StickerList.kt for list performance and correctness problems. Do not modify files.",
+      "expect_skill": true,
+      "expect_refs_any": ["lists-scrolling.md", "performance.md"],
+      "findings": ["\\bkey\\b", "contentType|content type"]
+    },
+    {
+      "id": "explicit_state_read_phase",
+      "mode": "explicit",
+      "gate": true,
+      "min_pass_rate": 1.0,
+      "prompt": "Use the compose-expert skill. Review shared/src/commonMain/kotlin/demo/Bouncer.kt for recomposition and phase problems. Do not modify files.",
+      "expect_skill": true,
+      "expect_refs_any": ["performance.md", "animation.md", "modifiers.md", "state-management.md"],
+      "findings": ["(lambda|layout phase|draw phase|defer|graphicsLayer|offset \\{)"]
+    },
+    {
+      "id": "explicit_commonmain_android_import",
+      "mode": "explicit",
+      "gate": true,
+      "min_pass_rate": 1.0,
+      "prompt": "Use the compose-expert skill. Will shared/src/commonMain/kotlin/demo/DeviceInfo.kt compile for iOS and desktop targets? Explain and suggest the right structure. Do not modify files.",
+      "expect_skill": true,
+      "expect_refs_any": ["multiplatform.md", "platform-specifics.md"],
+      "findings": ["(expect|actual)", "(commonMain|common)"]
+    },
+    {
+      "id": "implicit_shader_crash",
+      "mode": "implicit",
+      "gate": false,
+      "min_pass_rate": 0.67,
+      "prompt": "Users on older phones report my shimmer effect in shared/src/androidMain/kotlin/demo/Shimmer.android.kt crashes. Find the cause. Do not modify files.",
+      "expect_skill": true,
+      "expect_refs_any": ["agsl-shaders.md", "graphics-modern.md"],
+      "findings": ["(33|tiramisu|api level|version)"]
+    },
+    {
+      "id": "implicit_list_jank",
+      "mode": "implicit",
+      "gate": false,
+      "min_pass_rate": 0.67,
+      "prompt": "My Compose list in shared/src/commonMain/kotlin/demo/StickerList.kt janks and loses state when items reorder. Why? Do not modify files.",
+      "expect_skill": true,
+      "expect_refs_any": ["lists-scrolling.md", "performance.md"],
+      "findings": ["\\bkey\\b"]
+    },
+    {
+      "id": "implicit_cmp_ios",
+      "mode": "implicit",
+      "gate": false,
+      "min_pass_rate": 0.67,
+      "prompt": "Does the shared Compose Multiplatform code in shared/src/commonMain/kotlin/demo build for iOS? Find any blockers. Do not modify files.",
+      "expect_skill": true,
+      "expect_refs_any": ["multiplatform.md", "platform-specifics.md"],
+      "findings": ["(android)"]
+    },
+    {
+      "id": "out_of_scope_gradle_version",
+      "mode": "implicit",
+      "gate": true,
+      "min_pass_rate": 1.0,
+      "prompt": "Explain what settings.gradle.kts in this project does and how modules are included. Do not modify files.",
+      "forbid_skill": true,
+      "findings": ["(include|module|shared)"]
+    }
+  ]
+}

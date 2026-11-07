@@ -16,7 +16,7 @@ Every frame consists of three phases. Understanding state reads in each phase pr
 
 ### Drawing Phase
 - Emits draw operations, runs `Canvas` and custom `DrawScope`
-- Cannot read mutable state without stability warnings
+- A state read here invalidates only the draw phase (no recomposition or relayout), so read frequently changing state inside draw lambdas
 
 **Source**: `androidx/compose/runtime/Composer.kt`
 
@@ -81,9 +81,10 @@ Mark stable types explicitly:
 data class Person(val name: String, val age: Int)
 
 @Stable
-class UserViewModel : ViewModel {
-    private val _state = MutableState(UserState())
-    val state: State<UserState> = _state
+class Counter {
+    var count by mutableIntStateOf(0)
+        private set
+    fun increment() { count++ }
 }
 
 // Composable receiving stable types can skip recomposition
@@ -151,10 +152,10 @@ Use `Modifier.offset { }` (lambda) instead of `Modifier.offset()` (parameter) fo
 
 ## derivedStateOf — Reducing Recomposition Frequency
 
-When deriving expensive computations from state, wrap in `derivedStateOf` to dedup recompositions:
+Cache expensive calculations with `remember(keys)`; use `derivedStateOf` only to derive a value from fast-changing State:
 
 ```kotlin
-// Bad: recomposes on every items change
+// Bad: re-filters on every recomposition
 @Composable
 fun SearchResults(items: List<Item>, query: String) {
     val filtered = items.filter { query in it.title }  // Composition phase
@@ -163,19 +164,23 @@ fun SearchResults(items: List<Item>, query: String) {
     }
 }
 
-// Good: only recomposes if filtered result actually changes
+// Good: recompute only when inputs change (plain remember; no State inputs to derive from)
 @Composable
 fun SearchResults(items: List<Item>, query: String) {
-    val filtered = remember(items, query) {
-        derivedStateOf { items.filter { query in it.title } }
-    }
+    val filtered = remember(items, query) { items.filter { query in it.title } }
     LazyColumn {
-        items(filtered.value) { /* ... */ }
+        items(filtered) { /* ... */ }
     }
 }
 ```
 
-`derivedStateOf` deduplicates downstream recompositions — two different filters yielding the same list trigger only one downstream recomposition.
+`remember(keys)` caches a calculation. `derivedStateOf` is for a value computed from
+**State objects that change more often than the result**: readers recompose only when
+the derived value changes.
+
+```kotlin
+val showScrollToTop by remember { derivedStateOf { listState.firstVisibleItemIndex > 0 } }
+```
 
 ### computedStateOf (Compose Runtime 1.13+)
 
@@ -355,15 +360,9 @@ android {
 }
 ```
 
-Custom rules to preserve stability:
-
-```proguard
--keep @androidx.compose.runtime.Stable class **
--keep @androidx.compose.runtime.Immutable class **
--keepclassmembers class * {
-    @androidx.compose.runtime.Stable <methods>;
-}
-```
+Do not add keep rules for `@Stable`/`@Immutable`: stability is resolved by the Compose compiler at
+build time, not at runtime, so R8 rules do not affect it. For multi-module stability, use a
+`stability_config.txt`.
 
 ---
 
@@ -398,19 +397,10 @@ Reports frame times (ms), jank, jitter. Target <16.67ms for 60 fps.
 ## Common Hot Paths
 
 ### String Formatting in Composition
-```kotlin
-// Bad: allocates string every recomposition
-@Composable
-fun Counter(count: Int) {
-    Text("Count: ${count}")  // String.format called
-}
-
-// Still composed, but optimized
-@Composable
-fun Counter(count: Int) {
-    Text(buildString { append("Count: "); append(count) })
-}
-```
+String templates (`"Count: $count"`) compile to `StringBuilder` calls; the allocation is small and
+`buildString` is no faster. The real cost is recomposing the scope that builds the string every
+frame: defer the read (lambda/`graphicsLayer`/draw phase) or hoist the changing value, and use
+`stringResource(R.string.count, count)` for localized text.
 
 ### List Filtering Without derivedStateOf
 ```kotlin
@@ -425,11 +415,9 @@ fun FilteredList(items: List<Item>, predicate: (Item) -> Boolean) {
 // Good
 @Composable
 fun FilteredList(items: List<Item>, predicate: (Item) -> Boolean) {
-    val filtered = remember(items, predicate) {
-        derivedStateOf { items.filter(predicate) }
-    }
+    val filtered = remember(items, predicate) { items.filter(predicate) }
     LazyColumn {
-        items(filtered.value) { /* ... */ }
+        items(filtered) { /* ... */ }
     }
 }
 ```
@@ -512,7 +500,7 @@ Canvas(modifier = Modifier.fillMaxSize()) {
 }
 ```
 
-Rule: Never use `fillMaxSize()` on Canvas without an explicit height constraint. Always guard DrawScope operations.
+Rule: always guard DrawScope math against zero size. `fillMaxSize()` on a Canvas is fine when the parent bounds the height; in unbounded-height parents (`verticalScroll`, lazy items) give it an explicit height.
 
 ---
 
@@ -580,6 +568,31 @@ Rules:
   `tracing-wire`.
 - The library does not capture CPU scheduling or memory itself. Open the
   generated file in Perfetto and merge it with a system trace.
+
+---
+
+## Custom Draw Cost
+
+When many items animate or drag at once and recomposition is already deferred, jank usually
+comes from the draw phase: cost = passes per item x items x layer size.
+
+- **Count passes.** Looping `drawContent()` N times (for example a multi-step blur-shadow loop plus an outline loop) re-executes the whole content N times per item per frame. Prefer a few passes, a
+  platform shadow API, or caching the result.
+- **`saveLayer`/offscreen layers allocate buffers.** Under `CompositingStrategy.Auto`, a layer
+  goes offscreen when alpha < 1 or a `RenderEffect` is set; `CompositingStrategy.Offscreen`
+  forces it. Use offscreen only when needed (for example `BlendMode.Clear` masking).
+  Do not nest `saveLayer` inside a per-pass loop.
+- **Cache static output.** If the cutout/shadow does not change per frame, record it once into
+  a `GraphicsLayer` (`rememberGraphicsLayer()` + `record {}` + `drawLayer()`, Compose 1.7+) or
+  render it to an `ImageBitmap`, then draw the cached layer while the item moves.
+- **Allocate in `drawWithCache`, not in the draw lambda.** `Paint`, `Brush`, `Shader`, `Path`
+  created per draw are garbage every frame; `drawWithCache` keeps them until the size or a read
+  state changes.
+- **Reads belong in the draw lambda.** Animated alpha, offset, and progress read inside
+  `graphicsLayer {}`/`drawBehind {}` invalidate draw only. Passing the animated `Float` as a
+  composable parameter recomposes the child every frame.
+- **Measure.** Compare frame time with the effect on and off using Macrobenchmark
+  `FrameTimingMetric` and a Perfetto trace; scale the item count, because cost multiplies.
 
 ---
 
@@ -695,7 +708,7 @@ fun StableList(items: ImmutableList<Item>) { ... }
 ReportDrawnWhen { items.isNotEmpty() }
 ```
 
-5. **Canvas always explicitly sized** — never `fillMaxSize()` without a height constraint:
+5. **Canvas sized deliberately** — in unbounded-height parents use an explicit height instead of `fillMaxSize()`:
 ```kotlin
 // BAD
 Canvas(Modifier.fillMaxSize()) { ... }

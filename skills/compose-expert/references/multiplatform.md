@@ -91,7 +91,7 @@ fun main() {
 | `BackHandler` | -- | Yes | -- | -- | -- |
 | `dynamicColorScheme()` | -- | Yes | -- | -- | -- |
 | `LocalContext` | -- | Yes | -- | -- | -- |
-| `collectAsStateWithLifecycle()` | -- | Yes | -- | -- | -- |
+| `collectAsStateWithLifecycle()` | Yes | Yes | Yes | Yes | Yes |
 | `hiltViewModel()` | -- | Yes | -- | -- | -- |
 | Baseline Profiles / Macrobenchmark | -- | Yes | -- | -- | -- |
 | `Window`, `MenuBar`, `Tray` | -- | -- | Yes | -- | -- |
@@ -601,6 +601,23 @@ Text(stringResource(R.string.title))
 Image(painter = painterResource(Res.drawable.icon), contentDescription = null)
 Text(stringResource(Res.string.title))
 ```
+
+### DataStore in commonMain
+
+Create **one `DataStore` instance per file per process**. In common code build it with
+`PreferenceDataStoreFactory.createWithPath { path.toPath() }` (okio `Path`), and supply the file
+path from each platform via `expect`/`actual`.
+
+- Android: derive the path from `applicationContext.filesDir`, and keep a process-wide singleton.
+- iOS: derive it from the `NSDocumentDirectory`/`NSApplicationSupportDirectory` URL. Do not build
+  the store inside `remember {}` in `App()`: a second composition of `App` would create a second
+  store for the same file and throw. Hold it at app scope (top-level `lazy`, DI singleton).
+- Other key-value stores (`SharedPreferences`, `NSUserDefaults`, `java.util.prefs`, `localStorage`):
+  namespace your keys (a library must not delete or overwrite host-app keys by prefix), do disk
+  writes off the main thread (for example `java.util.prefs` `flush()` blocks), and keep one
+  storage abstraction in `commonMain` with per-platform implementations.
+- `remember { MyViewModel(...) }` does not give lifecycle ownership; use `viewModel { }`
+  (`lifecycle-viewmodel-compose`) so state survives configuration changes on Android.
 
 ### Lifecycle-aware collection in commonMain
 

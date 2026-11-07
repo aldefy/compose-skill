@@ -110,14 +110,14 @@ Button(onClick = { count++ }) { Text("Increment") }
 AnimatedContent(
     targetState = count,
     transitionSpec = {
-        slideInVertically(initialOffsetY = { it }) with slideOutVertically(targetOffsetY = { -it })
+        slideInVertically(initialOffsetY = { it }) togetherWith slideOutVertically(targetOffsetY = { -it })
     }
 ) { target ->
     Text("$target")
 }
 ```
 
-Use `with` to specify exit and enter together. This runs exits and entries simultaneously.
+Use `togetherWith` to specify enter and exit together. This runs exits and entries simultaneously.
 
 ### Sequencing transitions
 
@@ -125,7 +125,7 @@ Use `with` to specify exit and enter together. This runs exits and entries simul
 AnimatedContent(
     targetState = count,
     transitionSpec = {
-        slideInVertically(initialOffsetY = { it }) with slideOutVertically(targetOffsetY = { -it }) using SizeTransform(clip = false)
+        slideInVertically(initialOffsetY = { it }) togetherWith slideOutVertically(targetOffsetY = { -it }) using SizeTransform(clip = false)
     }
 ) { target ->
     Text(
@@ -943,6 +943,8 @@ fun ContentWithLoading(isLoading: Boolean, content: @Composable () -> Unit) {
 fun StaggeredListEntrance(items: List<String>) {
     Column {
         items.forEachIndexed { index, item ->
+            // Unkeyed: remember state follows position. If the list can reorder, wrap the body in
+            // key(item.id) (see lists-scrolling.md, "Keys in Non-Lazy Layouts").
             val animatable = remember { Animatable(0f) }
             LaunchedEffect(Unit) {
                 delay(index * 100L)

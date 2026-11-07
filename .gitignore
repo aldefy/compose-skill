@@ -23,3 +23,4 @@ local.properties
 
 # macOS
 .DS_Store
+evals/codex/results/

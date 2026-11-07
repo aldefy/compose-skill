@@ -70,6 +70,25 @@ itself. The keyword matcher cannot judge natural-language phrasing; whether a ho
 actually invokes the skill and then reads the right reference is a separate
 LLM-judged eval and is not run in CI.
 
+## Codex regression harness (manual, costs tokens)
+
+`evals/codex/run_eval.py` runs `evals/codex/cases.json` through `codex exec` in a
+read-only sandbox against a planted-defect fixture app, with an isolated
+`CODEX_HOME` containing only the skill under test. Skill use is scored only from
+completed shell commands in the event trace, never from the agent's prose.
+
+```
+python3 evals/codex/run_eval.py run --skill-ref WORKTREE --runs 3 --out evals/codex/results/candidate.json
+python3 evals/codex/run_eval.py run --skill-ref master   --runs 3 --out evals/codex/results/baseline.json
+python3 evals/codex/run_eval.py compare evals/codex/results/baseline.json evals/codex/results/candidate.json
+```
+
+Before any case runs, a preflight proves the sandbox is what blocks writes: the same
+canary prompt must create a file under `workspace-write` (positive control) and must
+not under `read-only`. Every run also hashes its app copy before and after. Results are
+non-deterministic: use at least 3 runs, treat one-run swings as noise, and run it before
+releases or after routing changes, not on every PR. Scorer logic is unit-tested in CI.
+
 ## Verifiable layout claims
 
 Reference docs can assert Compose layout behavior that CI executes. For measured

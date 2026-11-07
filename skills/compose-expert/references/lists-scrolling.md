@@ -366,6 +366,24 @@ if (showScrollToTop.value) {
 
 `derivedStateOf` derives a new value when scroll state changes without recomposing the entire list.
 
+## Keys in Non-Lazy Layouts
+
+`key {}` is not only for lazy lists. A `Column`, `Row`, or `Box` that emits children with
+`forEach` identifies them by **position**, so per-child `remember` state (gesture offsets,
+animations, text input) follows the slot, not the item, when the list is reordered, inserted
+into, or filtered.
+
+```kotlin
+items.forEach { item ->
+    key(item.id) {
+        DraggableCard(item)   // remembered state now follows item.id
+    }
+}
+```
+
+Use a stable, unique key (database id, UUID), never the index. Lazy-list `key`/`contentType`
+rules above are separate: non-lazy layouts have no `contentType` or recycling.
+
 ## Anti-Patterns
 
 ### ✗ Using LazyColumn for Small Fixed Lists

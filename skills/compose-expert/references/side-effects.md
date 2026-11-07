@@ -500,14 +500,15 @@ fun GoodListener(context: Context) {
 ### Capturing Mutable State Directly
 
 ```kotlin
-// Don't: stale state in effect
+// Note: a State delegate read inside the effect sees the current value. Staleness
+// applies to captured plain values and callback lambdas (use rememberUpdatedState).
 @Composable
 fun BadCapture() {
     var count by remember { mutableStateOf(0) }
 
     LaunchedEffect(Unit) {
         delay(1000)
-        println(count)  // May be stale!
+        println(count)  // reads the current value each time it runs
     }
 
     Button(onClick = { count++ }) { Text("Click") }
