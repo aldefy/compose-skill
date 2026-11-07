@@ -43,7 +43,11 @@ lives here so it stays available to Claude after the skill loads.
 `NavDisplay`, `NavKey`, `rememberNavBackStack`, `NavigableListDetailPaneScaffold`,
 `TextFieldState`, `InputTransformation`, `OutputTransformation`, `computedStateOf`,
 `MediaQuery`, `Grid`, `FlexBox`, `A2uiSurface`, `StateStore`, `RemoteCompose`,
-`MeshGradientPainter`, `PolygonShape`, `MorphPolygonShape`.
+`MeshGradientPainter`, `PolygonShape`, `MorphPolygonShape`, `AGSL`, `RuntimeShader`,
+`ShaderBrush`, `RenderEffect`, `AgentRunner`, `AgentSession`, `GenerativeModel`,
+`Gemini Nano`, `ML Kit Agentic API`, `androidx.tracing`, `traceCoroutine`,
+`tracing-wire`, `InProgressStrokesView`, `androidx.ink`, `Jetpack Ink`,
+`CarAppService`, `androidx.car.app`, `Android Auto`, `Android Automotive OS`.
 
 ### Compose Multiplatform / KMP
 `Compose Multiplatform`, `CMP`, `KMP`, `commonMain`, `expect`, `actual`,
@@ -102,7 +106,7 @@ first, then cite `source-code/` for implementation proof when receipts matter.
 - **`remember`, `rememberSaveable`, `mutableStateOf` vs `mutableIntStateOf`, state hoisting** → `references/state-management.md`
 - **`derivedStateOf`, `snapshotFlow`, StateFlow in UI, recomposition scope boundaries** → `references/state-management.md` (secondary: `references/performance.md`)
 - **`LaunchedEffect`, `SideEffect`, `DisposableEffect`, `rememberUpdatedState`, `rememberCoroutineScope`** → `references/side-effects.md`
-- **Recomposition frequency, "my screen recomposes too often", stability, `@Stable`/`@Immutable`, Compose compiler metrics, baseline profiles, strong skipping** → `references/performance.md`
+- **Recomposition frequency, "my screen recomposes too often", stability, `@Stable`/`@Immutable`, Compose compiler metrics, baseline profiles, strong skipping, `androidx.tracing`, `traceCoroutine`, Perfetto app traces** → `references/performance.md`
 - **`CompositionLocal`, ambient values, theming propagation, `LocalContext` misuse, custom locals** → `references/composition-locals.md`
 - **Compose state outside UI, AppState `Transform`, `listener`, `StateStore`, DataStore state persistence** → `references/appstate.md`
 
@@ -112,6 +116,7 @@ first, then cite `source-code/` for implementation proof when receipts matter.
 - **Shared element transitions, gesture-driven animation, `Modifier.graphicsLayer`, Canvas drawing, custom motion spec** → `references/animation.md` (secondary: `references/modifiers.md` for `graphicsLayer`)
 - **M3 motion tokens, `MotionTokens`, `MotionScheme`, animation duration tokens, M3 easing curves** → `references/material3-motion.md`
 - **Mesh gradients, wide gamut, polygon/morph shapes, progressive or backdrop blur, modern draw effects** → `references/graphics-modern.md`
+- **AGSL, `RuntimeShader`, `ShaderBrush`, shader brushes, `RenderEffect`, GPU effects** → `references/agsl-shaders.md`
 
 ### Layout, lists, modifiers
 
@@ -126,6 +131,7 @@ first, then cite `source-code/` for implementation proof when receipts matter.
 - **A2UI, Agent-to-UI, generative UI, component catalogs, `A2uiSurface`, agent-generated Compose UI** → `references/agentic-ui-a2ui.md`
 - **Remote Compose, `@RemoteComposable`, remote documents/players, Glance or Wear remote surfaces** → `references/remote-compose.md`
 - **AppFunctions, expose app actions to agents, Android MCP, `@AppFunctionDeclaration`, `AppFunctionService`, on-device tool calling** → `references/appfunctions.md`
+- **ML Kit Agentic API, `AgentRunner`, `AgentSession`, `GenerativeModel`, Gemini Nano, on-device agent workflows** → `references/ml-kit-agentic.md`
 
 ### Navigation
 
@@ -157,6 +163,8 @@ first, then cite `source-code/` for implementation proof when receipts matter.
 - **Wear OS Compose, Wear Material 3, `TransformingLazyColumn`, Wear Widgets, notification bridging** → `references/wear-compose.md`
 - **Android XR, Compose Glimmer, projected activities, Subspace, spatial panels, embedded 3D engines** → `references/xr-compose.md`
 - **Media3 UI Compose, ExoPlayer ownership, player controls, CastPlayer** → `references/media3-compose.md`
+- **Jetpack Ink, `androidx.ink`, stylus/pen drawing, `InProgressStrokesView`, brushes, stroke erasing** → `references/ink.md`
+- **Android Auto, Android Automotive OS, `CarAppService`, `androidx.car.app`, in-car templates** → `references/car-compose.md`
 
 ### Interop and accessibility
 
@@ -243,9 +251,13 @@ Read the relevant reference file(s) from `references/` before answering:
 | AppFunctions, agent tool calling, Android MCP | `references/appfunctions.md` |
 | Remote Compose and remote documents/players | `references/remote-compose.md` |
 | Modern graphics, mesh gradients, polygon shapes, blur | `references/graphics-modern.md` |
+| AGSL shaders, RuntimeShader, ShaderBrush, RenderEffect | `references/agsl-shaders.md` |
+| ML Kit Agentic API, Gemini Nano, AgentRunner, AgentSession | `references/ml-kit-agentic.md` |
 | Android XR and Compose Glimmer | `references/xr-compose.md` |
 | Wear OS Compose and Wear Widgets | `references/wear-compose.md` |
 | Media3 UI Compose | `references/media3-compose.md` |
+| Jetpack Ink, stylus drawing, brushes, strokes | `references/ink.md` |
+| Android Auto, Android Automotive OS, Car App Library | `references/car-compose.md` |
 | TV Compose: Surface, Carousel, NavigationDrawer, Cards, focus, D-pad | `references/tv-compose.md` |
 | M3 motion tokens, `MotionTokens`, `MotionScheme`, animation duration, easing | `references/material3-motion.md` |
 | PR URL, code review, "review this PR", "what's wrong with this" | `references/pr-review.md` |
