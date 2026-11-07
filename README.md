@@ -118,6 +118,7 @@ The difference is **source-backed grounding** — the agent checks real `android
 This skill is distributed as a plugin. See **[docs/INSTALL.md](docs/INSTALL.md)** for per-host instructions:
 
 - **Claude Code:** `/plugin marketplace add aldefy/compose-skill` → `/plugin install compose-expert`
+  (one step on Claude Code 2.1.275+: `/plugin install compose-expert --marketplace aldefy/compose-skill`)
 - **Copilot CLI:** `copilot plugin install aldefy/compose-skill`
 - **Codex CLI:** manual install — see INSTALL.md.
 

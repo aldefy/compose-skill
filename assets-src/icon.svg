@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#141A3A"/>
+      <stop offset="1" stop-color="#3A2A8C"/>
+    </linearGradient>
+    <linearGradient id="c1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6EE7B7"/><stop offset="1" stop-color="#10B981"/>
+    </linearGradient>
+    <linearGradient id="c2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#67E8F9"/><stop offset="1" stop-color="#0EA5E9"/>
+    </linearGradient>
+    <linearGradient id="c3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#A5B4FC"/><stop offset="1" stop-color="#6366F1"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.95"/>
+      <stop offset="0.35" stop-color="#C4B5FD" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#C4B5FD" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <rect width="1024" height="1024" rx="230" fill="url(#bg)"/>
+  <!-- layered cards: a composition of UI layers -->
+  <g filter="url(#shadow)">
+    <rect x="212" y="252" width="440" height="440" rx="96" fill="url(#c1)"/>
+    <rect x="292" y="332" width="440" height="440" rx="96" fill="url(#c2)"/>
+    <rect x="372" y="412" width="440" height="440" rx="96" fill="url(#c3)"/>
+  </g>
+  <rect x="372" y="412" width="440" height="440" rx="96" fill="none" stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="8"/>
+  <!-- flare -->
+  <circle cx="770" cy="262" r="210" fill="url(#glow)"/>
+  <path d="M770 112 C778 210 822 254 920 262 C822 270 778 314 770 412 C762 314 718 270 620 262 C718 254 762 210 770 112 Z" fill="#FFFFFF"/>
+  <path d="M905 396 C908 430 924 446 958 449 C924 452 908 468 905 502 C902 468 886 452 852 449 C886 446 902 430 905 396 Z" fill="#FFFFFF" fill-opacity="0.9"/>
+  <path d="M598 108 C600 128 610 138 630 140 C610 142 600 152 598 172 C596 152 586 142 566 140 C586 138 596 128 598 108 Z" fill="#FFFFFF" fill-opacity="0.85"/>
+</svg>
