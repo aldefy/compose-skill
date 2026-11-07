@@ -51,6 +51,25 @@ Run before tagging a release:
 - [ ] Codex symlink install works.
 - [ ] Stale-install banner surfaces when old-format SKILL.md (no `version:`) is loaded.
 
+## Routing and size evals
+
+The skill must stay lean and findable: `SKILL.md` is a router, and reference files
+load only on demand. `scripts/check-routing.py` (run by CI) enforces that:
+
+- every `references/*.md` is routed from `SKILL.md` and every routed file exists;
+- `SKILL.md` stays under 30,000 bytes and each reference under 45,000 bytes
+  (override with `SKILL_BUDGET` / `REF_BUDGET` only with a reason);
+- every fixture in `evals/routing.tsv` resolves to its expected reference through
+  the Quick Routing table, and out-of-scope queries (`NONE`) match no row;
+- every reference is the expected target of at least one fixture.
+
+When you add or rename a reference, add a Quick Routing row, a detailed-table row,
+and at least one fixture line (`query<TAB>reference.md`). Put detail in the
+reference, not in `SKILL.md`. `scripts/check-routing.bats` mutation-tests the eval
+itself. The keyword matcher cannot judge natural-language phrasing; whether a host
+actually invokes the skill and then reads the right reference is a separate
+LLM-judged eval and is not run in CI.
+
 ## Verifiable layout claims
 
 Reference docs can assert Compose layout behavior that CI executes. For measured

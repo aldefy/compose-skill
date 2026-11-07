@@ -47,7 +47,8 @@ lives here so it stays available to Claude after the skill loads.
 `ShaderBrush`, `RenderEffect`, `AgentRunner`, `AgentSession`, `GenerativeModel`,
 `Gemini Nano`, `ML Kit Agentic API`, `androidx.tracing`, `traceCoroutine`,
 `tracing-wire`, `InProgressStrokesView`, `androidx.ink`, `Jetpack Ink`,
-`CarAppService`, `androidx.car.app`, `Android Auto`, `Android Automotive OS`.
+`CarAppService`, `androidx.car.app`, `Android Auto`, `Android Automotive OS`,
+`parked apps`, `Jetpack Keep`, `UsesReflectionToConstruct`, `Engine Hub`, `android/skills`.
 
 ### Compose Multiplatform / KMP
 `Compose Multiplatform`, `CMP`, `KMP`, `commonMain`, `expect`, `actual`,
@@ -106,7 +107,7 @@ first, then cite `source-code/` for implementation proof when receipts matter.
 - **`remember`, `rememberSaveable`, `mutableStateOf` vs `mutableIntStateOf`, state hoisting** → `references/state-management.md`
 - **`derivedStateOf`, `snapshotFlow`, StateFlow in UI, recomposition scope boundaries** → `references/state-management.md` (secondary: `references/performance.md`)
 - **`LaunchedEffect`, `SideEffect`, `DisposableEffect`, `rememberUpdatedState`, `rememberCoroutineScope`** → `references/side-effects.md`
-- **Recomposition frequency, "my screen recomposes too often", stability, `@Stable`/`@Immutable`, Compose compiler metrics, baseline profiles, strong skipping, `androidx.tracing`, `traceCoroutine`, Perfetto app traces** → `references/performance.md`
+- **Recomposition frequency, "my screen recomposes too often", stability, `@Stable`/`@Immutable`, Compose compiler metrics, baseline profiles, strong skipping, `androidx.tracing`, `traceCoroutine`, Perfetto app traces, Jetpack Keep / `@UsesReflectionTo*` keep annotations** → `references/performance.md`
 - **`CompositionLocal`, ambient values, theming propagation, `LocalContext` misuse, custom locals** → `references/composition-locals.md`
 - **Compose state outside UI, AppState `Transform`, `listener`, `StateStore`, DataStore state persistence** → `references/appstate.md`
 
@@ -115,7 +116,7 @@ first, then cite `source-code/` for implementation proof when receipts matter.
 - **`animate*AsState`, `AnimatedVisibility`, `Crossfade`, `updateTransition`, `Animatable`, `rememberInfiniteTransition`** → `references/animation.md`
 - **Shared element transitions, gesture-driven animation, `Modifier.graphicsLayer`, Canvas drawing, custom motion spec** → `references/animation.md` (secondary: `references/modifiers.md` for `graphicsLayer`)
 - **M3 motion tokens, `MotionTokens`, `MotionScheme`, animation duration tokens, M3 easing curves** → `references/material3-motion.md`
-- **Mesh gradients, wide gamut, polygon/morph shapes, progressive or backdrop blur, modern draw effects** → `references/graphics-modern.md`
+- **Mesh gradients, `MeshGradientPainter`, wide gamut, polygon/morph shapes, `PolygonShape`, `MorphPolygonShape`, progressive or backdrop blur, modern draw effects** → `references/graphics-modern.md`
 - **AGSL, `RuntimeShader`, `ShaderBrush`, shader brushes, `RenderEffect`, GPU effects** → `references/agsl-shaders.md`
 
 ### Layout, lists, modifiers
@@ -152,7 +153,7 @@ first, then cite `source-code/` for implementation proof when receipts matter.
 - **`MaterialTheme`, `ColorScheme`, `Typography`, `Shapes`, dynamic color, M3 tokens, color roles** → `references/theming-material3.md`
 - **Material 3 Expressive, `MaterialExpressiveTheme`, `ButtonGroup`, `SplitButton`, `FloatingActionButtonMenu`, `LoadingIndicator` (wavy), `HorizontalFloatingToolbar`, `@ExperimentalMaterial3ExpressiveApi`** → `references/theming-material3.md` (motion: `references/material3-motion.md`)
 - **Atom, molecule, organism, template, component hierarchy, design system structure, reusable components, design tokens** → `references/atomic-design.md`
-- **Figma → Compose, screenshot → composable, design token translation, spec-to-code, redline interpretation** → `references/design-to-compose.md`
+- **Figma → Compose, Figma to Compose, screenshot → composable, design token translation, spec-to-code, redline interpretation** → `references/design-to-compose.md`
 - **`Style {}`, `MutableStyleState`, `Modifier.styleable()` (experimental Foundation Styles API)** → `references/styles-experimental.md`
 
 ### Multiplatform and platform-specific
@@ -161,10 +162,10 @@ first, then cite `source-code/` for implementation proof when receipts matter.
 - **`ComposeUIViewController` (iOS), `Window`/`Tray`/`MenuBar` (Desktop), `UIKitView`, `ComposeViewport` (Web), platform interop** → `references/platform-specifics.md`
 - **TV Compose, `androidx.tv`, D-pad focus, `FocusRequester` on TV, `Carousel`, `NavigationDrawer` (TV), 10-foot UI, leanback migration** → `references/tv-compose.md`
 - **Wear OS Compose, Wear Material 3, `TransformingLazyColumn`, Wear Widgets, notification bridging** → `references/wear-compose.md`
-- **Android XR, Compose Glimmer, projected activities, Subspace, spatial panels, embedded 3D engines** → `references/xr-compose.md`
+- **Android XR, Compose Glimmer, projected activities, Subspace, spatial panels, embedded 3D engines, XR emulators, Engine Hub, XREAL AURA** → `references/xr-compose.md`
 - **Media3 UI Compose, ExoPlayer ownership, player controls, CastPlayer** → `references/media3-compose.md`
 - **Jetpack Ink, `androidx.ink`, stylus/pen drawing, `InProgressStrokesView`, brushes, stroke erasing** → `references/ink.md`
-- **Android Auto, Android Automotive OS, `CarAppService`, `androidx.car.app`, in-car templates** → `references/car-compose.md`
+- **Android Auto, Android Automotive OS, `CarAppService`, `androidx.car.app`, in-car templates, parked apps (video/games/browsers in the car)** → `references/car-compose.md`
 
 ### Interop and accessibility
 
@@ -178,6 +179,10 @@ first, then cite `source-code/` for implementation proof when receipts matter.
 - **Deprecated Compose API, "removed in version X", migration from old API, replaced symbols** → `references/deprecated-patterns.md`
 - **Experimental opt-in, `@OptIn`, `@ExperimentalFoundationStyleApi`, unstable API usage** → `references/styles-experimental.md` (for Styles); for general guidance, the relevant topic file
 - **Session start, project detection, auto-init** → `references/auto-init.md`
+
+### Official Android skills
+
+- **Audit/migrate/scaffold tasks an official `android/skills` skill covers, "is there an official skill for…"** → `references/official-android-skills.md`
 
 ### Source-code receipts (cite, don't route to)
 
@@ -257,7 +262,8 @@ Read the relevant reference file(s) from `references/` before answering:
 | Wear OS Compose and Wear Widgets | `references/wear-compose.md` |
 | Media3 UI Compose | `references/media3-compose.md` |
 | Jetpack Ink, stylus drawing, brushes, strokes | `references/ink.md` |
-| Android Auto, Android Automotive OS, Car App Library | `references/car-compose.md` |
+| Android Auto, Android Automotive OS, Car App Library, parked apps | `references/car-compose.md` |
+| Official `android/skills` cross-links, when to defer | `references/official-android-skills.md` |
 | TV Compose: Surface, Carousel, NavigationDrawer, Cards, focus, D-pad | `references/tv-compose.md` |
 | M3 motion tokens, `MotionTokens`, `MotionScheme`, animation duration, easing | `references/material3-motion.md` |
 | PR URL, code review, "review this PR", "what's wrong with this" | `references/pr-review.md` |

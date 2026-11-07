@@ -489,6 +489,7 @@ data class User(val name: String, val age: Int)
 - **Baseline Profiles**: https://developer.android.com/develop/ui/compose/performance/baseline-profiles
 - **In-process tracing (`androidx.tracing` 2.0)**: https://developer.android.com/topic/performance/tracing/in-process-tracing
 - **Tracing release notes**: https://developer.android.com/jetpack/androidx/releases/tracing
+- **Jetpack Keep**: https://developer.android.com/topic/performance/app-optimization/jetpack-keep-annotations
 
 ---
 
@@ -634,6 +635,35 @@ Fix unstable types by:
 1. Using `@Stable` annotation on the class
 2. Using `kotlinx.collections.immutable.ImmutableList` instead of `List`
 3. Adding the class to `compose-stability-config.txt` for multi-module projects
+
+---
+
+## Jetpack Keep (alpha) — keep rules next to reflection
+
+Compose itself needs no hand-written keep rules, but release builds that use
+reflection or JNI do. Jetpack Keep (`androidx.annotation.keep`, `1.0.0-alpha01`,
+requires AGP 8.7+) replaces broad `-keep` rules with annotations on the code that
+performs the reflection; its Gradle plugin generates **conditional** rules, so
+R8 keeps the target only if it keeps the annotated caller.
+
+- Add both the library (`androidx.annotation.keep:keep`) and the Gradle plugin
+  (`androidx.annotation.keep`) to every module that uses it; they share one
+  version. The plugin reads only that module's own code.
+- Annotate the reflecting function: `@UsesReflectionToConstruct`,
+  `@UsesReflectionToAccessMethod`, `@UsesReflectionToAccessField`. Prefer
+  `classConstant` over `className` and the most specific class; omit
+  `parameterTypes` to keep every overload, pass an empty array for the
+  no-argument form.
+- `@UnconditionallyKeep` is for code called from outside Kotlin/Java (for example
+  JNI). It limits optimization, so use it only when the `@UsesReflection*` forms
+  do not apply.
+- Run `./gradlew :app:lint` (`ReflectionWithoutKeepAnnotations`,
+  `MissingKeepAnnotationPlugin`) then `lintFix`; inspect the output of
+  `./gradlew :app:releaseExtractKeepRules` before deleting any old rule.
+- It is alpha: a new version can generate rules that keep less, causing
+  `ClassNotFoundException` only in release builds. Diff generated rules on every
+  upgrade and test a release build. Reflection discovered by annotation is not
+  covered yet; keep a manual rule for it.
 
 ---
 
