@@ -3,6 +3,20 @@
 Android XR spans headsets, wired optical displays, and intelligent eyewear.
 Choose APIs by device capability rather than treating XR as one UI target.
 
+## Release maturity (AndroidX XR, checked 2026-11-06)
+
+| Library | Channel | Version observed |
+|---|---|---|
+| `androidx.xr.runtime`, `androidx.xr.scenecore`, `androidx.xr.arcore` | Stable | `1.0.0` |
+| `androidx.xr.compose` | Beta | `1.0.0-beta02` |
+| `androidx.xr.glimmer` | Alpha | `1.0.0-alpha22` |
+| `androidx.xr.projected` | Alpha | `1.0.0-alpha14` |
+
+Core runtime, SceneCore, and ARCore are stable; the Compose spatial layer is
+beta, and Glimmer and projected activities are alpha. Pin versions per library,
+gate alpha/beta APIs behind a feature flag or separate module, and re-check the
+release page before documenting a version — alpha APIs break between releases.
+
 ## Existing 2D Compose UI
 
 Start with an adaptive, resizable 2D activity. Existing Android UI can run in a
@@ -67,6 +81,7 @@ Design accessibility at the interaction-model stage:
 ## Sources
 
 - Android XR: https://developer.android.com/develop/xr
+- AndroidX XR release notes: https://developer.android.com/jetpack/androidx/releases/xr-scenecore
 - Glimmer: https://developer.android.com/develop/xr/jetpack-xr-sdk/compose-glimmer
 - Dev Summit Glimmer session: https://developer.android.com/events/dev-summit/talks/build-world-anchored-experiences-for-xreal-aura-wired-xr-glasses
 - Embedded engines: https://developer.android.com/events/dev-summit/talks/elevate-immersive-experiences-with-3d-engines-in-jetpack-compose-for-xr

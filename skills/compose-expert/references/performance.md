@@ -487,6 +487,8 @@ data class User(val name: String, val age: Int)
 - **Compose Compiler Reports**: https://developer.android.com/develop/ui/compose/performance/stability-report
 - **Macrobenchmark**: https://developer.android.com/develop/ui/compose/performance/measurement
 - **Baseline Profiles**: https://developer.android.com/develop/ui/compose/performance/baseline-profiles
+- **In-process tracing (`androidx.tracing` 2.0)**: https://developer.android.com/topic/performance/tracing/in-process-tracing
+- **Tracing release notes**: https://developer.android.com/jetpack/androidx/releases/tracing
 
 ---
 
@@ -530,6 +532,53 @@ Composition tracing identifies how long composables take. Compose Runtime 1.13
 adds recomposition tracing, which records state reads/writes and call stacks that
 caused recomposition in Perfetto. Use it to find the invalidation source before
 adding `remember`, annotations, or derived state.
+
+### App-level tracing with `androidx.tracing` 2.0
+
+Composition and recomposition tracing show Compose internals. For your own
+code — repositories, use cases, image decoding, coroutine pipelines — add
+sections with `androidx.tracing` 2.0, a Kotlin API that writes Perfetto-format
+events from inside the process.
+
+```kotlin
+dependencies {
+    // Libraries that only emit events: depend on the lightweight API.
+    implementation("androidx.tracing:tracing:<version>")
+    // App module only: Android/JVM implementation and Perfetto sink.
+    implementation("androidx.tracing:tracing-wire:<version>")
+}
+```
+
+Check the release page for the current version before pinning (2.0.5 was the
+latest stable on 2026-10-21). On Android, `tracing-wire` initializes itself
+through AndroidX Startup and writes Perfetto files to the app's no-backup files
+directory; on the JVM you create a `TraceSink` and `TraceDriver` yourself.
+
+```kotlin
+suspend fun loadFeed(): Feed =
+    Tracer.global.traceCoroutine(category = "feed", name = "loadFeed") {
+        repository.refresh()
+    }
+```
+
+Rules:
+
+- Use `Tracer.global` at the call site; do not cache the reference — the global
+  tracer can be replaced after app initialization. Never call `setGlobalTracer`
+  from a library.
+- Use `trace(...)` for blocking code and `traceCoroutine(...)` for suspending
+  code. `traceCoroutine` propagates context across suspension points and thread
+  switches, so related work appears as connected flows in Perfetto.
+- Both accept a `category`, `name`, optional propagation token, `isRoot`, and a
+  `metadataBlock` for annotations (arguments, source file/line, call stack
+  entries). Keep metadata small; do not record user identifiers, tokens, or
+  message content.
+- Do not catch `CancellationException` inside a traced block to "close" the
+  section — the section ends when the block exits, including by cancellation.
+- Reusable libraries depend on `tracing` only; the app chooses the backend with
+  `tracing-wire`.
+- The library does not capture CPU scheduling or memory itself. Open the
+  generated file in Perfetto and merge it with a system trace.
 
 ---
 
