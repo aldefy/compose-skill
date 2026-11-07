@@ -4,6 +4,39 @@ Build for window capabilities, not device labels. Phones can be resized;
 tablets can be compact; desktop windows can be narrow; foldables can expose a
 hinge or tabletop posture.
 
+## Googlebook and desktop-class Android
+
+Googlebook is an Android desktop-class form factor, not a separate UI codebase.
+Treat its resizable window, keyboard, trackpad, mouse, and external-display
+capabilities as first-class inputs. Do not branch on a model name or assume a
+phone-sized window.
+
+- Support arbitrary window sizes, split-screen, multi-window, and multi-display.
+- Preserve navigation, editing, scroll, and selection state across resize and
+  configuration changes with `rememberSaveable`, `rememberSerializable`, or a
+  state holder; do not hide resize bugs with `android:configChanges`.
+- Use `Grid`, `FlexBox`, adaptive navigation scenes, and `MediaQuery` for
+  responsive layout decisions.
+- Add keyboard shortcuts, predictable focus traversal, Enter/Space activation,
+  hover affordances, tooltips, pointer icons, and drag-and-drop where the task
+  benefits from desktop input.
+- Keep touch targets usable; desktop support adds input paths, it does not
+  remove accessibility or touch requirements.
+
+Aim for at least **Tier 2 (Adaptive optimized)** quality. Tier 1 (Adaptive
+differentiated) applies when the experience intentionally uses desktop
+multitasking, drag-and-drop, stylus, or other large-screen capabilities.
+
+### Googlebook test matrix
+
+Validate critical flows on a Googlebook-sized configuration, a resizable
+window, split-screen, and an external display. Also test keyboard, mouse,
+trackpad, hover, shortcuts, focus order, drag-and-drop where supported, and
+state restoration after resize. Android's adaptive compatibility matrix includes
+Googlebook, foldable, 8-inch tablet, 10.5-inch tablet, and 13-inch Chromebook
+configurations; use the Desktop (Preview) emulator or resizable emulator when
+available.
+
 ## Choose the layout primitive
 
 | Need | Primitive |
