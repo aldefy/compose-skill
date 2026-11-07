@@ -91,7 +91,9 @@ lives here so it stays available to Claude after the skill loads.
 Any GitHub PR URL matching `github.com/.*/pull/\d+`, or phrases:
 "review this PR", "review this diff", "review this code",
 "check this code", "check this diff", "what's wrong with this".
-On match, follow `references/pr-review.md` exclusively.
+On match, follow `references/pr-review.md` for the review workflow and report, and also read the
+topic reference(s) from Quick Routing for any dimension the request names (performance, lists,
+shaders, navigation…).
 
 ### Session start
 Auto-detect Compose projects on `session_start` — see `references/auto-init.md`.
@@ -107,21 +109,21 @@ first, then cite `source-code/` for implementation proof when receipts matter.
 - **`remember`, `rememberSaveable`, `mutableStateOf` vs `mutableIntStateOf`, state hoisting** → `references/state-management.md`
 - **`derivedStateOf`, `snapshotFlow`, StateFlow in UI, recomposition scope boundaries** → `references/state-management.md` (secondary: `references/performance.md`)
 - **`LaunchedEffect`, `SideEffect`, `DisposableEffect`, `rememberUpdatedState`, `rememberCoroutineScope`** → `references/side-effects.md`
-- **Recomposition frequency, "my screen recomposes too often", stability, `@Stable`/`@Immutable`, Compose compiler metrics, baseline profiles, strong skipping, `androidx.tracing`, `traceCoroutine`, Perfetto app traces, Jetpack Keep / `@UsesReflectionTo*` keep annotations** → `references/performance.md`
+- **Recomposition frequency, "my screen recomposes too often", stability, `@Stable`/`@Immutable`, Compose compiler metrics, baseline profiles, strong skipping, `androidx.tracing`, `traceCoroutine`, Perfetto app traces, Jetpack Keep / `@UsesReflectionTo*` keep annotations, custom draw cost, `drawWithContent`, `saveLayer`, offscreen layers, `drawWithCache`, `rememberGraphicsLayer`** → `references/performance.md`
 - **`CompositionLocal`, ambient values, theming propagation, `LocalContext` misuse, custom locals** → `references/composition-locals.md`
-- **Compose state outside UI, AppState `Transform`, `listener`, `StateStore`, DataStore state persistence** → `references/appstate.md`
+- **Compose state outside UI, AppState `Transform`, `listener`, `StateStore`, Jetpack AppState persistence (not the DataStore library itself)** → `references/appstate.md`
 
 ### Animation and motion
 
 - **`animate*AsState`, `AnimatedVisibility`, `Crossfade`, `updateTransition`, `Animatable`, `rememberInfiniteTransition`** → `references/animation.md`
-- **Shared element transitions, gesture-driven animation, `Modifier.graphicsLayer`, Canvas drawing, custom motion spec** → `references/animation.md` (secondary: `references/modifiers.md` for `graphicsLayer`)
+- **Shared element transitions, gesture-driven animation, `Modifier.graphicsLayer`, custom motion spec** → `references/animation.md` (secondary: `references/modifiers.md` for `graphicsLayer`; Canvas/custom drawing cost → `references/performance.md`)
 - **M3 motion tokens, `MotionTokens`, `MotionScheme`, animation duration tokens, M3 easing curves** → `references/material3-motion.md`
 - **Mesh gradients, `MeshGradientPainter`, wide gamut, polygon/morph shapes, `PolygonShape`, `MorphPolygonShape`, progressive or backdrop blur, modern draw effects** → `references/graphics-modern.md`
 - **AGSL, `RuntimeShader`, `ShaderBrush`, shader brushes, `RenderEffect`, GPU effects** → `references/agsl-shaders.md`
 
 ### Layout, lists, modifiers
 
-- **`LazyColumn`, `LazyRow`, `LazyVerticalGrid`, `LazyHorizontalGrid`, `key`/`itemKey`, `contentType`, `LazyListState`, scroll state, sticky headers** → `references/lists-scrolling.md`
+- **`LazyColumn`, `LazyRow`, `LazyVerticalGrid`, `LazyHorizontalGrid`, `key`/`itemKey`, `contentType`, `LazyListState`, scroll state, sticky headers, `key {}` for `forEach`/`repeat` children in non-lazy layouts** → `references/lists-scrolling.md`
 - **`HorizontalPager`, `VerticalPager`, `PagerState`** → `references/lists-scrolling.md`
 - **Modifier chain ordering, custom layout, `Layout`, `SubcomposeLayout`, layout modifier, draw modifier, `Painter`, `Modifier.Node`** → `references/modifiers.md`
 - **Adaptive layout, `MediaQuery`, `Grid`, `FlexBox`, keyboard/mouse/trackpad, indirect input, input testing** → `references/adaptive-layout-input.md`
@@ -158,7 +160,7 @@ first, then cite `source-code/` for implementation proof when receipts matter.
 
 ### Multiplatform and platform-specific
 
-- **iOS/Desktop/Web CMP targets, `expect`/`actual`, `commonMain`, `Res.drawable`, `Res.string`, platform-specific composables** → `references/multiplatform.md`
+- **iOS/Desktop/Web CMP targets, `expect`/`actual`, `commonMain`, `Res.drawable`, `Res.string`, platform-specific composables, DataStore on KMP (`createWithPath`), `viewModel { }` in commonMain** → `references/multiplatform.md`
 - **`ComposeUIViewController` (iOS), `Window`/`Tray`/`MenuBar` (Desktop), `UIKitView`, `ComposeViewport` (Web), platform interop** → `references/platform-specifics.md`
 - **TV Compose, `androidx.tv`, D-pad focus, `FocusRequester` on TV, `Carousel`, `NavigationDrawer` (TV), 10-foot UI, leanback migration** → `references/tv-compose.md`
 - **Wear OS Compose, Wear Material 3, `TransformingLazyColumn`, Wear Widgets, notification bridging** → `references/wear-compose.md`
@@ -209,8 +211,12 @@ explicit review phrases: "review this PR", "review this diff", "check this code"
 
 When Review Mode activates:
 1. Do **not** follow the generation workflow below
-2. Read `references/pr-review.md` and follow its workflow exclusively
-3. Output a structured local review report — do not post to GitHub
+2. Read `references/pr-review.md` and follow its workflow and report format. For a local
+   file (no PR URL), skip the `gh` fetch steps and review the file directly.
+3. Also read the topic reference(s) that match what the user asked to review (use Quick
+   Routing: "for list performance" → `lists-scrolling.md` and `performance.md`; a shader file →
+   `agsl-shaders.md`). The checklist alone does not cover draw cost, state phases, or shaders.
+4. Output a structured local review report — do not post to GitHub
 
 ## Workflow
 

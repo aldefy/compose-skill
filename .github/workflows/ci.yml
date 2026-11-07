@@ -37,6 +37,9 @@ jobs:
       - name: Run routing eval mutation tests
         run: bats scripts/check-routing.bats
 
+      - name: Codex harness scorer unit tests
+        run: python3 -m unittest discover -s evals/codex -p 'test_*.py'
+
   verify-claims:
     runs-on: ubuntu-latest
     steps:

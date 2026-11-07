@@ -70,6 +70,12 @@ removed API deprecated migration	deprecated-patterns.md
 Compose project detection session start auto-init	auto-init.md
 # --- official skills ---
 is there an official Android skill for this	official-android-skills.md
+# --- added from the StickerExplode eval ---
+Modifier.drawWithContent saveLayer cost many items	performance.md
+rememberGraphicsLayer cache offscreen draw cost	performance.md
+key(id) in forEach for non-lazy Column	lists-scrolling.md
+DataStore singleton createWithPath KMP	multiplatform.md
+review this file for list performance	pr-review.md|lists-scrolling.md|performance.md
 # --- out of scope: must not match any row ---
 upgrade AGP to 9	NONE
 CameraX preview use case	NONE

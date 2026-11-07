@@ -4,9 +4,13 @@ Source: `compose/material3/material3/src/commonMain/kotlin/androidx/compose/mate
 and `compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/MotionScheme.kt`
 in `androidx/androidx` (branch: `androidx-main`)
 
-CMP compatibility: `MotionTokens`, `MotionScheme`, and all easing constants are in
-`androidx.compose.material3` — available on all CMP targets (Android, Desktop, iOS, Web)
-since M3 1.2.0. No platform guards needed.
+> **`MotionTokens` is `internal` to material3** (`internal object MotionTokens`), so app code cannot
+> reference it. The public API is `MaterialTheme.motionScheme` / `MotionScheme`. The token values
+> below are reference data (what M3 components use); to reuse one, copy the number or easing curve
+> into your own constants.
+
+CMP compatibility: `MotionScheme` is in `androidx.compose.material3`, available on all CMP targets
+(Android, Desktop, iOS, Web) since M3 1.2.0. No platform guards needed.
 
 ---
 
@@ -17,9 +21,9 @@ M3 provides two ways to apply motion:
 | API | When to Use |
 |-----|------------|
 | **`MotionScheme`** (preferred) | Inside components that should adapt to the app's motion scheme — the theme controls whether spring-based or tween-based specs are used |
-| **`MotionTokens` + `tween()`** | When you need explicit `tween()` / `keyframes {}` control and the component is not theme-motion-aware |
+| **Your own constants + `tween()`** (values copied from the token tables) | When you need explicit `tween()` / `keyframes {}` control and the component is not theme-motion-aware |
 
-Use `MotionScheme` for new components. Use `MotionTokens` when the caller explicitly provides `AnimationSpec` parameters or when working with `AnimatedVisibility`, `Crossfade`, or shared elements.
+Use `MotionScheme` for new components. Use your own constants (copied token values) when the caller explicitly provides `AnimationSpec` parameters or when working with `AnimatedVisibility`, `Crossfade`, or shared elements.
 
 ---
 

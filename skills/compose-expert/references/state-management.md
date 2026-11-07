@@ -106,11 +106,11 @@ fun StatefulCounter() {
 Computes a value from existing state, recomputing only when dependencies change.
 
 ```kotlin
-// ❌ Wrong: recomputes on every recomposition
-val isEven = count % 2 == 0
+// ❌ Reads the scroll offset (changes every frame) in a large scope
+val showButton = scrollState.value > 0
 
-// ✅ Correct: recomputes only when count changes
-val isEven = derivedStateOf { count % 2 == 0 }
+// ✅ Readers recompose only when the boolean flips
+val showButton by remember { derivedStateOf { scrollState.value > 0 } }
 ```
 
 **When to use:**
@@ -135,7 +135,7 @@ fun UserList(users: List<User>, filterText: String) {
 
 **Pitfall:** Using `derivedStateOf` for cheap operations (String concatenation, simple conditions) adds overhead. Only use when the computation is non-trivial.
 
-**Pitfall:** Accessing `.value` in a lambda passed to a child composable doesn't create a dependency. Use `snapshotFlow` for callbacks.
+**Pitfall:** a state read inside a lambda is tracked by whichever scope *runs* the lambda. A lambda run during layout or draw (`offset { }`, `graphicsLayer { }`, `drawBehind { }`) creates a dependency in that phase only; a lambda run later from an event callback (`onClick`) creates none. Use `snapshotFlow` to observe state from a coroutine.
 
 ## snapshotFlow
 
@@ -285,7 +285,7 @@ fun Parent() {
 ### StateFlow (strong default for ViewModels)
 - Survives composition recomposition and configuration changes
 - Works with lifecycle (`collectAsStateWithLifecycle`)
-- Thread-safe, works across layers
+- Safe to read from any thread; update atomically with `_state.update { }`, not `_state.value++` (read-modify-write races)
 
 ```kotlin
 class UserViewModel : ViewModel() {
@@ -346,18 +346,20 @@ fun Counter() {
 }
 ```
 
-### Reading State in Wrong Scope
+### Reading State Inside an Effect vs Keying the Effect
 ```kotlin
-// ❌ Reads happen inside lambda; changes don't re-launch effect
+// Reads the CURRENT value each iteration (the delegate reads State.value);
+// the effect just does not restart when count changes.
 var count by remember { mutableIntStateOf(0) }
 LaunchedEffect(Unit) {
     while (true) {
         delay(1000)
-        println(count)  // Always prints 0
+        println(count)
     }
 }
 
-// ✅ Pass state to LaunchedEffect key
+// Key the effect only when it must RESTART on change. Keying on a value that
+// changes every frame (for example an animation's .value) relaunches every frame.
 LaunchedEffect(count) {
     println("Count changed: $count")
 }

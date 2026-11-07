@@ -114,7 +114,8 @@ Box(
         .background(Color.Blue)
 ) { }
 
-// Don't: apply background then clip (works but semantically wrong)
+// Don't: background then clip. The background is drawn before the clip applies,
+// so it keeps square corners.
 Box(
     Modifier
         .background(Color.Blue)
@@ -187,7 +188,7 @@ fun Modifier.myCustomModifier(value: String) = composed {
 ### New API: Modifier.Node
 
 ```kotlin
-class MyCustomNode(val value: String) : Modifier.Node {
+class MyCustomNode(var value: String) : Modifier.Node() {
     override fun onDetach() {
         // Cleanup when removed
     }
