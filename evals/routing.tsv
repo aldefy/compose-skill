@@ -1,0 +1,77 @@
+# Routing eval fixtures: query<TAB>expected reference (use | for alternatives, NONE = out of scope)
+# Checked by scripts/check-routing.py against SKILL.md "Quick Routing".
+# Add one fixture whenever you add a reference or a trigger term. Prefer the wording
+# a developer would actually type; keep queries short.
+#
+# --- state, effects, performance ---
+how do I hoist state with rememberSaveable	state-management.md
+mutableIntStateOf vs mutableStateOf	state-management.md
+LaunchedEffect restarts when key changes	side-effects.md
+rememberUpdatedState in DisposableEffect	side-effects.md
+my screen recomposes too often	performance.md
+Compose compiler metrics and strong skipping	performance.md
+baseline profiles for startup	performance.md
+traceCoroutine with tracing-wire in Perfetto	performance.md
+Jetpack Keep UsesReflectionToConstruct R8	performance.md
+CompositionLocal custom local misuse	composition-locals.md
+AppState StateStore Transform listener	appstate.md
+# --- animation, graphics ---
+AnimatedVisibility and Crossfade	animation.md
+shared element transitions	animation.md
+MotionScheme and motion tokens	material3-motion.md
+MeshGradientPainter and polygon morph shapes	graphics-modern.md
+AGSL RuntimeShader ShaderBrush	agsl-shaders.md
+RenderEffect shader on graphicsLayer	agsl-shaders.md|animation.md|modifiers.md
+# --- layout, lists, text ---
+LazyColumn key and contentType	lists-scrolling.md
+HorizontalPager PagerState	lists-scrolling.md
+Modifier ordering and Modifier.Node	modifiers.md
+adaptive layout with MediaQuery and FlexBox	adaptive-layout-input.md
+trackpad and keyboard indirect input	adaptive-layout-input.md
+TextFieldState InputTransformation	text-editing.md
+# --- agentic and device AI ---
+A2uiSurface agent generated UI	agentic-ui-a2ui.md
+RemoteComposable remote document player	remote-compose.md
+AppFunctionService expose app to agents Android MCP	appfunctions.md
+ML Kit AgentRunner AgentSession Gemini Nano	ml-kit-agentic.md
+# --- navigation ---
+NavHost deep links type-safe routes	navigation.md
+migrate Nav 2 to Nav 3 NavDisplay NavKey	navigation-migration.md
+rememberNavBackStack per-tab back stacks	navigation-migration.md
+# --- paging ---
+PagingSource and PagingConfig setup	paging.md
+collectAsLazyPagingItems LoadState retry	paging.md
+RemoteMediator offline-first paging	paging-offline.md
+asSnapshot TestPager paging tests	paging-mvi-testing.md
+# --- theming, design ---
+MaterialTheme ColorScheme dynamic color	theming-material3.md
+Material 3 Expressive ButtonGroup SplitButton	theming-material3.md
+atoms molecules organisms design system	atomic-design.md
+Figma to Compose design tokens	design-to-compose.md
+Modifier.styleable and Style MutableStyleState	styles-experimental.md
+# --- platforms ---
+expect actual commonMain Res.drawable	multiplatform.md
+ComposeUIViewController UIKitView iOS interop	platform-specifics.md
+Window Tray MenuBar desktop	platform-specifics.md
+TV D-pad focus Carousel	tv-compose.md
+Wear OS TransformingLazyColumn	wear-compose.md
+Compose Glimmer projected activity Subspace	xr-compose.md
+XR emulators and Engine Hub	xr-compose.md
+Media3 ExoPlayer ownership	media3-compose.md
+Jetpack Ink InProgressStrokesView stylus	ink.md
+Android Automotive OS CarAppService templates	car-compose.md
+parked apps video games browsers in the car	car-compose.md
+# --- interop, a11y, production, review ---
+AndroidView ComposeView hybrid migration	view-composition.md
+TalkBack semantics touch target size	accessibility.md
+production crash ANR zero-size DrawScope	production-crash-playbook.md
+review this PR	pr-review.md
+removed API deprecated migration	deprecated-patterns.md
+Compose project detection session start auto-init	auto-init.md
+# --- official skills ---
+is there an official Android skill for this	official-android-skills.md
+# --- out of scope: must not match any row ---
+upgrade AGP to 9	NONE
+CameraX preview use case	NONE
+Play Billing subscription upgrade	NONE
+Room database migration	NONE

@@ -1,9 +1,10 @@
 # In-Car Apps (Android Auto and Android Automotive OS)
 
-> Driving UI is template-based. Apps built with the Android for Cars App Library
-> (`androidx.car.app`) describe screens with library templates; the host renders
-> them. Do not plan on putting arbitrary Compose screens on the car display
-> while driving.
+> Two different car surfaces. **While driving**, UI is template-based: apps built
+> with the Android for Cars App Library (`androidx.car.app`) describe screens with
+> library templates and the host renders them — do not plan on arbitrary Compose
+> screens. **While parked**, video, game, and browser apps can run as ordinary
+> adaptive Compose apps (see "Parked apps" below).
 
 Google treats driver distraction as a hard constraint. An app must belong to a
 supported category and meet car design and quality requirements before it can be
@@ -64,6 +65,50 @@ Qualifying criteria per category are defined in Android app quality for cars.
 - Keep template content small and rate-limited; the library enforces limits on
   items and navigation depth.
 
+## Parked apps (video, games, browsers)
+
+Parked apps run on Android Auto and Android Automotive OS only while the vehicle
+is parked, so a regular adaptive Compose app can be the UI. Only three categories
+qualify; other categories cannot be published as parked apps. Availability
+varies: video is generally available on Android Automotive OS and unsupported on
+Android Auto; games are generally available on both; browsers are beta on
+Android Automotive OS only. Audio while driving is a separate beta feature.
+
+Compose-relevant requirements (from the official `android-for-cars-parked-apps`
+skill):
+
+- **Manifest:** video sets `android:appCategory="video"`; games set `"game"`;
+  browsers add `android.intent.category.APP_BROWSER` to an exported `MAIN`
+  activity. Android Auto needs `CAR_LAUNCHER` on the `MAIN` intent filter;
+  Android Automotive OS needs `android.hardware.type.automotive` declared. Never
+  add `distractionOptimized` to a parked app activity.
+- **Display continuity:** handle `screenSize`, `smallestScreenSize`,
+  `orientation`, `screenLayout`, and `density` in `android:configChanges` so
+  moving to a distant display does not recreate the activity or stutter playback.
+  Do not request an orientation the display lacks: check
+  `FEATURE_SCREEN_LANDSCAPE` / `FEATURE_SCREEN_PORTRAIT` first.
+- **Back navigation:** Android Automotive OS vehicles are not required to have a
+  back button or gesture. Provide explicit in-app back and close controls on
+  non-root screens, unless compatibility mode
+  (`android.software.car.display_compatibility`) is declared and active — then
+  hide the duplicate affordance.
+- **Insets:** OEMs may lock system bars visible. Track controllable bars with
+  `OnControllableInsetsChangedListener`, and protect UI with
+  `WindowInsets.safeDrawing`. For irregular display cutouts set
+  `windowLayoutInDisplayCutoutMode` to `3` (always) or `2` (never) in
+  `res/values-car-v30/integers.xml`; do not use the default or short-edges modes.
+- **Driver distraction lifecycle:** when the vehicle moves, the OS covers the
+  activity and calls `onPause` (and `onStop` on compatibility-mode vehicles).
+  Pause playback on `ON_PAUSE`/`ON_STOP` with `LifecycleEventEffect`, expose a
+  Media3 `MediaSession`, and stop external controls from resuming playback while
+  `CarUxRestrictionsManager` reports distraction optimization is required.
+- **Browsers:** block saved passwords and payment methods unless protected by a
+  profile lock, and prompt before syncing sensitive data to the car.
+
+Test against the car app quality tiers (Car ready, Car optimized, Car
+differentiated), and cover both Android Auto and Android Automotive OS — they are
+separate platforms.
+
 ## Driving rules to design for
 
 - Minimize required attention: short text, large targets, few steps.
@@ -82,6 +127,7 @@ Qualifying criteria per category are defined in Android app quality for cars.
 
 ## Sources
 
+- Official parked-apps agent skill: https://github.com/android/skills/tree/main/cars/android-for-cars-parked-apps
 - Android for Cars App Library overview: https://developer.android.com/training/cars/apps
 - Set up your project (categories): https://developer.android.com/training/cars/apps/library/set-up-project
 - Android Automotive OS apps: https://developer.android.com/training/cars/apps/automotive-os

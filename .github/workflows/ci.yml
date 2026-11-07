@@ -31,6 +31,12 @@ jobs:
       - name: Run version-consistency tests
         run: bats scripts/check-versions.bats
 
+      - name: Routing + size budget eval
+        run: python3 scripts/check-routing.py
+
+      - name: Run routing eval mutation tests
+        run: bats scripts/check-routing.bats
+
   verify-claims:
     runs-on: ubuntu-latest
     steps:
