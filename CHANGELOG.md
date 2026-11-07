@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.5.2] - 2026-11-07
+
+### Added
+
+- Plugin icon (`.claude-plugin/icon.png`, SVG source in `assets-src/`) so the
+  plugin passes the Anthropic plugin directory icon check.
+- One-step Claude Code install line in the README.
+
 ## [2.5.1] - 2026-11-07
 
 ### Added
