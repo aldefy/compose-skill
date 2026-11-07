@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.5.1] - 2026-11-07
+
+### Added
+
+- References: AppFunctions / Android MCP, AGSL shaders (with a test and
+  evaluation strategy), ML Kit Agentic API, Jetpack Ink, Android Auto and
+  Automotive OS (templated driving UI and parked apps), and official
+  `android/skills` cross-links.
+- Guidance: Googlebook desktop-class Android, `androidx.tracing` 2.0, Jetpack Keep
+  (alpha), AndroidX XR release maturity plus emulators, Engine Hub and XREAL
+  AURA, custom draw cost, `key {}` in non-lazy layouts, and KMP DataStore and
+  key-value storage.
+- Routing and size evals (`scripts/check-routing.py`, `evals/routing.tsv`) with
+  mutation tests, and a Codex regression harness (`evals/codex`) with a
+  planted-defect fixture app.
+
+### Changed
+
+- Review Mode now also reads the matching topic references and works on local
+  files, not only GitHub PRs.
+- Navigation 3 migration guide now covers 1.2 type-safe deep links and
+  predictive back (the old "unsupported" claim was stale).
+
+### Fixed
+
+- Wrong or misleading guidance: draw-phase state reads, the `String.format`
+  myth, ProGuard "stability" rules, an invalid `@Stable` example,
+  `derivedStateOf` misuse, stale-state comments, `background` + `clip`, the
+  `Modifier.Node` snippet, `with` vs `togetherWith`, and a
+  `collectAsStateWithLifecycle` table contradiction.
+- `MotionTokens` is `internal` to material3; the skill no longer tells app code
+  to reference it.
+
 ## [2.5.0] - 2026-11-05
 
 ### Added
